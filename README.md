@@ -4,6 +4,12 @@
 
 ### Step 1 - Run main.py file
 
+#### To update the version only
 ```bash
-bash run.sh switzerland online
+bash run_ingestion.sh true
+```
+
+#### To update the release
+```bash
+bash run_ingestion.sh false
 ```
