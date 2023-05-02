@@ -27,36 +27,6 @@ elif sheet_name==sheet_name4:
 else:
     print('No Collection Created')
 
-def update_collection(coll, backup_coll, coll_backup, update_db):
-    import pymongo
-    if coll.count_documents({})>0:
-        if backup_coll:
-            coll_backup.insert_many(coll.find())
-
-        max_release = coll.find_one(sort=[("release", pymongo.DESCENDING)])['release']
-        max_version = coll.find_one(sort=[("version", pymongo.DESCENDING)])['version']
-
-        if update_db:
-            # updating records: new version, same release
-            i['release'] = max_release
-            i['version'] = max_version+1                       
-            i['updated_on'] = datetime.now()
-        else:
-            # inserting new records: version= 1, new release
-            i['created_on'] = datetime.now()
-            i['updated_on'] = datetime.now()
-            i['release'] = max_release+1
-            i['version'] = 1    
-        coll.drop()                
-        
-    else:
-        i['created_on'] = datetime.now()
-        i['updated_on'] = datetime.now()
-        i['release'] = 1
-        i['version'] = 1     
-
-    coll.insert_one(i)
-
 j = 1
 import pymongo
 max_release = None
