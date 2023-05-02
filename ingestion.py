@@ -44,7 +44,7 @@ for i in tqdm(data[:-1]):
 
                 max_release = coll.find_one(sort=[("release", pymongo.DESCENDING)])['release']
                 max_version = coll.find_one(sort=[("version", pymongo.DESCENDING)])['version']
-
+                
                 if update_db:
                     # updating records: new version, same release
                     i['release'] = max_release

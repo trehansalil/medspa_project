@@ -1,7 +1,7 @@
 git config --global user.name "Salil Trehan"
 git config --global user.email "trehansalil1@gmail.com"
 source env/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt > logs/requirements.log 2>&1&
 
 #!/bin/bash
 
