@@ -81,3 +81,5 @@ for i in tqdm(data[:-1]):
                 i['version'] = 1
             coll.insert_one(i)
             j+=1
+
+print(f"{sheet_name} data process is complete")
