@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flask API - Execute SH Script</title>
+    <script>
+        async function submitForm(event) {
+            event.preventDefault();
+            const form = event.target;
+            const data = new FormData(form);
+            const response = await fetch('/run_script', {method: 'POST', body: data});
+            const result = await response.json();
+            document.getElementById('output').innerText = result.message;
+        }
+    </script>
+</head>
+<body>
+    <h1>Select Action</h1>
+    <form onsubmit="submitForm(event)">
+        <input type="radio" id="ingestUpdate" name="action" value="ingest_update" required>
+        <label for="ingestUpdate">Ingest Update</label><br>
+        <input type="radio" id="ingestNewData" name="action" value="ingest_new_data" required>
+        <label for="ingestNewData">Ingest New Data</label><br><br>
+        <button type="submit">Execute Script</button>
+    </form>
+    <p id="output"></p>
+</body>
+</html>

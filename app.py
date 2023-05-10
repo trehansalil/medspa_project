@@ -1,6 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
+import subprocess
 
 app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route('/add')
 def add_numbers():
@@ -11,10 +16,20 @@ def add_numbers():
 
 @app.route('/run_script', methods=['POST'])
 def run_script():
-    param1 = request.form['param1']
+    action = request.form['action']
+    print(action)
     script = 'run_ingestion.sh'
-    subprocess.run(["bash", script, param1], check=True)
-    return 'Script executed successfully'
+    param1 = ''
+    if action == 'ingest_update':
+        param1 = 'true' 
+        message = 'Version Update/Data Update Successful'
+    elif action == 'ingest_new_data':
+        param1 = 'false'
+        message = 'Release Update/New Data Ingestion Successful'
+    else:
+        message = 'Invalid action'   
+    subprocess.run(["bash", script, param1], check=True)     
+    return jsonify(message=message)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True)

@@ -8,6 +8,7 @@ pip install -r requirements.txt > logs/requirements.log 2>&1&
 # Check if the input parameter is 1, 0, true, or false
 if [[ "$1" =~ ^(1|0|true|false)$ ]]; then
   # Run the Python script and pass the input parameter
+    echo "Valid input."
     python ingestion.py sheet_name=procedure_risk update_db="$1"> logs/procedure_risk_ingestion.log 2>&1&
     python ingestion.py sheet_name=sun_sensitivity update_db="$1" > logs/sun_sensitivity_ingestion.log 2>&1&
     python ingestion.py sheet_name=hq update_db="$1"> logs/hq_ingestion.log 2>&1&
