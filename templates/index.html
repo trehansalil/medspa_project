@@ -50,14 +50,28 @@
             text-align: center;
             margin-top: 20px;
         }
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
     </style>
     <script>
         async function submitForm(event) {
             event.preventDefault();
             const form = event.target;
             const data = new FormData(form);
+            
+            // Show the loading message
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('output').innerText = '';
+
             const response = await fetch('/run_script', {method: 'POST', body: data});
             const result = await response.json();
+
+            // Hide the loading message
+            document.getElementById('loading').style.display = 'none';
+
             document.getElementById('output').innerText = result.message;
         }
     </script>
@@ -72,6 +86,7 @@
             <label for="ingestNewData">Ingest New Data</label><br><br>
             <button type="submit">Execute Script</button>
         </form>
+        <div id="loading" class="loading">Loading...</div>
         <p id="output"></p>
     </div>
 </body>
