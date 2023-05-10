@@ -1,7 +1,8 @@
 from flask import Flask, request, jsonify, render_template
 import subprocess
+import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=os.path.join(os.getcwd(), 'static'))
 
 @app.route('/')
 def index():

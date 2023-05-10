@@ -2,6 +2,55 @@
 <html>
 <head>
     <title>Flask API - Execute SH Script</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('/static/ingestion_page_background.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 10px;
+            width: 30%;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        label {
+            margin: 5px;
+        }
+        button {
+            background-color: #007BFF;
+            color: #FFFFFF;
+            font-size: 16px;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        p {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
     <script>
         async function submitForm(event) {
             event.preventDefault();
@@ -14,14 +63,16 @@
     </script>
 </head>
 <body>
-    <h1>Select Action</h1>
-    <form onsubmit="submitForm(event)">
-        <input type="radio" id="ingestUpdate" name="action" value="ingest_update" required>
-        <label for="ingestUpdate">Ingest Update</label><br>
-        <input type="radio" id="ingestNewData" name="action" value="ingest_new_data" required>
-        <label for="ingestNewData">Ingest New Data</label><br><br>
-        <button type="submit">Execute Script</button>
-    </form>
-    <p id="output"></p>
+    <div class="container">
+        <h1>Select Action</h1>
+        <form onsubmit="submitForm(event)">
+            <input type="radio" id="ingestUpdate" name="action" value="ingest_update" required>
+            <label for="ingestUpdate">Ingest Update</label><br>
+            <input type="radio" id="ingestNewData" name="action" value="ingest_new_data" required>
+            <label for="ingestNewData">Ingest New Data</label><br><br>
+            <button type="submit">Execute Script</button>
+        </form>
+        <p id="output"></p>
+    </div>
 </body>
 </html>
