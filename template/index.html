@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flask API - Execute SH Script</title>
+</head>
+<body>
+    <h1>Enter Parameters</h1>
+    <form action="/run_script" method="POST">
+        <label for="param1">Parameter 1:</label>
+        <input type="text" id="param1" name="param1" required><br><br>
+        <label for="param2">Parameter 2:</label>
+        <input type="text" id="param2" name="param2" required><br><br>
+        <button type="submit">Execute Script</button>
+    </form>
+</body>
+</html>
