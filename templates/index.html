@@ -55,6 +55,11 @@
             text-align: center;
             margin-top: 20px;
         }
+        .redirect-button {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }        
     </style>
     <script>
         async function submitForm(event) {
@@ -87,7 +92,10 @@
             <button type="submit">Execute Script</button>
         </form>
         <div id="loading" class="loading">Loading...</div>
-        <p id="output"></p>
-    </div>
+            <p id="output"></p>
+        </div>
+        <div class="redirect-button">
+            <a href="/patient_page"><button>Go to Patient Page</button></a>
+        </div>        
 </body>
 </html>
