@@ -1,17 +1,11 @@
 import sys
 import os
-import pandas as pd
-import numpy as np
-import string
 # import streamlit as st
-import base64
 import configparser
 import json
 
-from datetime import date, datetime
 from dateutil.parser import parse
 from pymongo import MongoClient
-from tqdm import tqdm
 
 
 config_path = os.path.join(os.getcwd(), "config_file.config")
@@ -27,6 +21,8 @@ mongo_db_coll_procedure_risk = config_parser.get('mongo_config', 'mongo_db_coll_
 mongo_db_coll_sun_sensitivity = config_parser.get('mongo_config', 'mongo_db_coll_sun_sensitivity')
 mongo_db_coll_hq = config_parser.get('mongo_config', 'mongo_db_coll_hq')
 mongo_db_coll_retinol = config_parser.get('mongo_config', 'mongo_db_coll_retinol')
+mongo_db_coll_sun_protection = config_parser.get('mongo_config', 'mongo_db_coll_sun_protection')
+mongo_coll_release_table = config_parser.get('mongo_config', 'mongo_coll_release_table')
 backup_coll = config_parser.getboolean('mongo_config', 'backup_coll')
 
 # All file inputs
@@ -35,10 +31,13 @@ sheet_name1 = config_parser.get('input_files', 'sheet_name1')
 sheet_name2 = config_parser.get('input_files', 'sheet_name2')
 sheet_name3 = config_parser.get('input_files', 'sheet_name3')
 sheet_name4 = config_parser.get('input_files', 'sheet_name4')
+sheet_name5 = config_parser.get('input_files', 'sheet_name5')
 
 client = MongoClient(mongo_db_uri)
 db = client[mongo_db_name]
 db_backup = client[mongo_db_backup_name]
+
+coll_release_table = db[mongo_coll_release_table]
 
 
 def variable_extractor(var_name='var1', var_type='string'):

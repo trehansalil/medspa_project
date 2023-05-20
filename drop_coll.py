@@ -23,6 +23,9 @@ elif sheet_name==sheet_name3:
 elif sheet_name==sheet_name4:
     coll = db[mongo_db_coll_retinol]
     coll_backup = db_backup[mongo_db_coll_retinol]
+elif sheet_name==sheet_name5:
+    coll = db[mongo_db_coll_sun_protection]
+    coll_backup = db_backup[mongo_db_coll_sun_protection]    
 
 coll.drop()
 coll_backup.drop()

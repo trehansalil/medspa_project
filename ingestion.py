@@ -1,6 +1,8 @@
 import requests
 import sys
 import configparser
+from tqdm import tqdm
+from datetime import datetime
 import json
 
 from gsheet import *
@@ -24,6 +26,9 @@ elif sheet_name==sheet_name3:
 elif sheet_name==sheet_name4:
     coll = db[mongo_db_coll_retinol]
     coll_backup = db_backup[mongo_db_coll_retinol]
+elif sheet_name==sheet_name5:
+    coll = db[mongo_db_coll_sun_protection]
+    coll_backup = db_backup[mongo_db_coll_sun_protection]    
 else:
     print('No Collection Created')
 
@@ -42,8 +47,8 @@ for i in tqdm(data[:-1]):
                 if backup_coll:
                     coll_backup.insert_many(coll.find())
 
-                max_release = coll.find_one(sort=[("release", pymongo.DESCENDING)])['release']
-                max_version = coll.find_one(sort=[("version", pymongo.DESCENDING)])['version']
+                max_release = coll_release_table.find_one(sort=[("release", pymongo.DESCENDING)])['release']
+                max_version = coll_release_table.find_one(sort=[("version", pymongo.DESCENDING)])['version']
                 
                 if update_db:
                     # updating records: new version, same release

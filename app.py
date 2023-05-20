@@ -12,6 +12,7 @@ coll_procedure_risk = db[mongo_db_coll_procedure_risk]
 coll_sun_sensitivity = db[mongo_db_coll_sun_sensitivity]
 coll_hq = db[mongo_db_coll_hq]
 coll_retinol = db[mongo_db_coll_retinol]
+coll_sun_protection = db[mongo_db_coll_sun_protection]
 
 @app.route('/')
 def index():
@@ -56,11 +57,13 @@ def submit_form():
     print(retinol_adequate)
     retinol_inadequate = coll_retinol.find_one({"Retinol": str(data['retinol_inadequate']), "Category": "Inadequate"})['Values']
     print(retinol_inadequate)
+
+    sun_protection = coll_sun_protection.find_one({"Retinol": str(data['sun_protection'])})['Values']
     hq = coll_hq.find_one({"Hq 4%": data['hq']})['Values']
-    if data['sun']=='yes':
-        sun_protection = 15
-    else:
-        sun_protection = 0
+    # if data['sun']=='yes':
+    #     sun_protection = 15
+    # else:
+    #     sun_protection = 0
     print(sun_sensitivity, retinol_adequate, retinol_inadequate, hq)
     client_score = 0
     if data['sun_sensitivity'] == "Dark Brown":
@@ -69,6 +72,7 @@ def submit_form():
         client_score = sun_sensitivity - 0.5*(sun_protection+retinol_adequate+retinol_inadequate+hq)
     else:
         client_score = sun_sensitivity - (sun_protection+retinol_adequate+retinol_inadequate+hq)
+    client_score = client_score if client_score>0 else 0
     # Return a response (e.g., success message)
     return jsonify({'client-score': f"{client_score}"})
 

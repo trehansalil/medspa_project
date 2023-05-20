@@ -9,3 +9,4 @@ python drop_coll.py sheet_name=procedure_risk > logs/drop_procedure_risk_ingesti
 python drop_coll.py sheet_name=sun_sensitivity > logs/drop_sun_sensitivity_ingestion.log 2>&1&
 python drop_coll.py sheet_name=hq > logs/drop_hq_ingestion.log 2>&1&
 python drop_coll.py sheet_name=retinol > logs/drop_retinol_ingestion.log 2>&1&  
+python drop_coll.py sheet_name=sun_protection > logs/drop_sun_protection_ingestion.log 2>&1&  
