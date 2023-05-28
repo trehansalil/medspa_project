@@ -38,6 +38,7 @@ db = client[mongo_db_name]
 db_backup = client[mongo_db_backup_name]
 
 coll_release_table = db[mongo_coll_release_table]
+coll_release_table_backup = db_backup[mongo_coll_release_table]
 
 
 def variable_extractor(var_name='var1', var_type='string'):

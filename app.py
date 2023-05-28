@@ -51,14 +51,14 @@ def submit_form():
     data = request.get_json()
     # Process the form data as needed
     print(data)
+    print("\n")
 
     sun_sensitivity= coll_sun_sensitivity.find_one({"Sun Sensitivity": data['sun_sensitivity']})['Values']
     retinol_adequate = coll_retinol.find_one({"Retinol": str(data['retinol_adequate']), "Category": "Adequate"})['Values']
     print(retinol_adequate)
     retinol_inadequate = coll_retinol.find_one({"Retinol": str(data['retinol_inadequate']), "Category": "Inadequate"})['Values']
     print(retinol_inadequate)
-
-    sun_protection = coll_sun_protection.find_one({"Retinol": str(data['sun_protection'])})['Values']
+    sun_protection = coll_sun_protection.find_one({"Sun Protection": str(data['sun_protection'])})['Values']
     hq = coll_hq.find_one({"Hq 4%": data['hq']})['Values']
     # if data['sun']=='yes':
     #     sun_protection = 15

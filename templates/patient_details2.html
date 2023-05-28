@@ -4,18 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forever Medspaa</title>
-    <link rel="stylesheet" type="text/css" href="\static\css\bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="\static\css\fontawesome-all.min.css">
-    <link rel="stylesheet" type="text/css" href="\static\css\iofrm-style.css">
-    <link rel="stylesheet" type="text/css" href="\static\css\iofrm-theme25.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/fontawesome-all.min.css">
+    <link rel="stylesheet" type="text/css" href="css/iofrm-style.css">
+    <link rel="stylesheet" type="text/css" href="css/iofrm-theme25.css">
 </head>
 
 
 <body>
     
 <style>
+
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 10px;
+  margin-top: -50px;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+th {
+  background-color: #f9f9f9;
+  text-align: center;
+}
+
+td {
+  text-align: left;
+}
     
-select {
+    select {
   width: 100%;
   min-width: 15ch;
   max-width: 45ch;
@@ -34,7 +56,7 @@ select {
         <div class="website-logo">
             <a href="index.html">
                 <div class="logo">
-                    <img class="logo-size" src="\static\images\forever-logo.png" alt="">
+                    <img class="logo-size" src="images/forever-logo.png" alt="">
                 </div>
             </a>
         </div>
@@ -78,11 +100,11 @@ select {
                                     <div class="form-subtitle">Sun Sensitivity</div>
                                     
                                     <select name="sunsensitivity" id="sunsensitivity">
-                                    <option value="Sensitive/Pale">Sensitive/Pale</option>
-                                    <option value="Lighter Brown">Lighter Brown</option>
-                                    <option value="Light brown">Light Brown</option>
-                                    <option value="Dark Brown">Dark Brown</option>
-                                     <option value="Black">Black</option>
+                                    <option value="sentitive">Sensitive/Pale</option>
+                                    <option value="lighterbrown">Lighter Brown</option>
+                                    <option value="lightbrown">Light Brown</option>
+                                    <option value="darkbrown">Dark Brown</option>
+                                     <option value="black">Black</option>
                                     </select>
                                     
                                     
@@ -104,10 +126,10 @@ select {
                                     <!--<div class="separator"></div>-->
                                     <div class="form-subtitle">HQ% Prep</div>
                                     <select name="hq" id="hq">
-                                    <option value="1 wk">1 wk</option>
-                                    <option value="2 wk">2 wk</option>
-                                    <option value="4 wk">4 wk</option>
-                                    <option value="None">None</option>
+                                    <option value="1wk">1 wk</option>
+                                    <option value="2wk">2 wk</option>
+                                    <option value="4wk">4 wk</option>
+                                    <option value="none">None</option>
                                      
                                     </select>
                                 
@@ -115,10 +137,10 @@ select {
                                      <br>
                                      <div class="form-subtitle">Retinol Adequate</div>
                                     <select name="retinol" id="retinol">
-                                    <option value="2 wk">2 wk</option>
-                                    <option value="3 wk">3 wk</option>
-                                    <option value="4 wk">4 wk</option>
-                                    <option value="None">None</option>
+                                    <option value="2wk">2 wk</option>
+                                    <option value="3wk">3 wk</option>
+                                    <option value="4wk">4 wk</option>
+                                    <option value="none">None</option>
                                      
                                     </select>
                                     
@@ -126,18 +148,18 @@ select {
                                      <br>
                                      <div class="form-subtitle">Retinol Inadequate</div>
                                     <select name="retinol1" id="retinol1">
-                                    <option value="2 wk">2 wk</option>
-                                    <option value="3 wk">3 wk</option>
-                                    <option value="4 wk">4 wk</option>
-                                    <option value="None">None</option>
+                                    <option value="2wk">2 wk</option>
+                                    <option value="3wk">3 wk</option>
+                                    <option value="4wk">4 wk</option>
+                                    <option value="none">None</option>
                                      
                                     </select>
                                     <br>
                                      <br>
                                      <div class="form-subtitle">Sun Protection</div>
                                     <select name="sun" id="sun">
-                                    <option value="Yes">Yes</option>
-                                    <option value="No">No</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
                                 
                                      
                                     </select>
@@ -146,13 +168,14 @@ select {
                                      <br>
                                      <div class="form-subtitle">Frekles</div>
                                     <select name="frekles" id="frekles">
-                                        <option value="Procedure">Procedure</option>
-                                        <option value="PIH Risk">PIH Risk</option>
-                                        <option value="PIH & Procedure Risk">PIH & Procedure Risk</option>
-                                        <option value="Frekles">Frekles</option>
-                                        <option value="LHR">LHR</option>
-                                        <option value="CIT of Procedure">CIT of Procedure</option>
-                                        <option value="Melasma">Melasma</option>
+                                    <option value="procedure">Procedure</option>
+                                    <option value="pihrisk">PIH Risk</option>
+                                    <option value="pih">PIH & Procedure Risk</option>
+                                    <option value="frekles">Frekles</option>
+                                    <option value="lhr">LHR</option>
+                                    <option value="cit">CIT of Procedure</option>
+                                     <option value="melasma">Melasma</option>
+                                     
                                     </select>
                                     <!--<label>Card number</label>-->
                                     <div class="">
@@ -180,11 +203,8 @@ select {
                                         </div>
                                     </div>
                                     <div class="form-button text-centre">
-                                        <button type="submit" id="btn-next" class="ibtn btn-tab-next">Submit</button>
+                                        <button id="btn-next" class="ibtn btn-tab-next">Submit</button>
                                     </div>
-                                    <!-- <div id="score-container" style="display: none;">
-                                        <h4>Client Score: <span id="client-score"></span></h4>
-                                    </div> -->
                                 </div>
                             <!--    <div class="tab-pane fade" id="step2" role="tabpanel" aria-labelledby="step2-tab">-->
                             <!--        <div class="form-subtitle">3. Confirm your personal information</div>-->
@@ -197,55 +217,288 @@ select {
                             <!--    </div>-->
                             <!--</div>-->
                         </form>
+                        
+                        
+                        
                     </div>
                 </div>
+                
+               <div class="form-holder">
+                <div class="form-content">
+                    
+                        
+                        <table>
+  <tr>
+    <th>Procedure</th>
+    <th>PIH Risk</th>
+    <th>PIH & Procedure Risk</th>
+    <th>Frekles</th>
+    <th>LHR</th>
+    <th>CIT of Procedure</th>
+    <th>Melasma</th>
+  </tr>
+  <tr>
+    <td>Facial</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+
+  <tr>
+     <td>IPL</td>
+     <td></td>
+     <td></td>
+     <td></td>
+     <td></td>
+     <td></td>
+     <td></td>
+  </tr>
+  <tr>
+    <td>Diode laser 805</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+   <td>Vi/Vi Adv/Vi Purify</td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+  </tr>
+  <tr>
+    <td>1064 LP</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+     <td>1540</td>
+     <td></td>
+     <td></td>
+     <td></td>
+     <td></td>
+     <td></td>
+     <td></td>
+  </tr>
+  <tr>
+   <td>CO2 Deep</td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+    </tr>
+     <tr>
+    <td>Erbium</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    </tr>
+     <tr>
+   <td>MN 1.5- 2</td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+    </tr>
+     <tr>
+   <td>VI PPI</td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+    </tr>
+     <tr>
+   <td>Pico 532 Frac</td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+    </tr>
+     <tr>
+   <td>755 LP</td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+    </tr>
+     <tr>
+   <td>MN .75- 1.5</td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+    </tr>
+     <tr>
+  <td>Med depth peel</td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+    </tr>
+     <tr>
+   <td>CO2 Mild</td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+    </tr>
+     <tr>
+   <td>Pico 1064 FB</td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+    </tr>
+     <tr>
+   <td>Pico 1064 Frac</td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+    </tr>
+     <tr>
+   <td>Pico 532 FB</td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+    </tr>
+     <tr>
+   <td>Pico 1064 FB</td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+    </tr>
+     <tr>
+   <td>RFMN Ablative</td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+    </tr>
+     <tr>
+   <td>RFMN 1mm Inc</td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+    </tr>
+     <tr>
+   <td>RFMN 1mm not</td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+    </tr>
+        <tr>
+  <td>MN .25-.75</td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+    </tr>
+        <tr>
+  <td>MN 2- 3</td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+    </tr>
+        <tr>
+   <td>Micro-dermabra</td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+    </tr>
+    <tr>
+   <td>Contoura</td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td></td>
+    </tr>
+ 
+</table>
+
             </div>
         </div>
     </div>
-<script src="\static\js\jquery.min.js"></script>
-<script src="\static\js\popper.min.js"></script>
-<script src="\static\js\bootstrap.min.js"></script>
-<script src="\static\js\cleave.min.js"></script>
-<script src="\static\js\main.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="js/jquery.min.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/cleave.min.js"></script>
+<script src="js/main.js"></script>
+
 <script>
-    $(document).ready(function() {
-        $('#btn-next').click(function(e) {
-            e.preventDefault();  // Prevent form submission
-
-            // Collect form data
-            var formData = {
-                name: $('#name').val(),
-                email: $('#email').val(),
-                tel: $('#tel').val(),
-                sun_sensitivity: $('#sunsensitivity').val(),
-                hq: $('#hq').val(),
-                retinol_adequate: $('#retinol').val(),
-                retinol_inadequate: $('#retinol1').val(),
-                sun_protection: $('#sun').val(),
-                key: $('#frekles').val()
-            };
-
-            // Send POST request to Flask API
-            $.ajax({
-                type: 'POST',
-                url: '/submit',  // Update with your Flask route
-                data: JSON.stringify(formData),
-                contentType: 'application/json',
-                success: function(response) {
-                    // Handle successful response from the API
-                    console.log(response);
-                    $('#client-score').text(response.score);
-                    $('#score-container').show();
-                },
-                error: function(error) {
-                    // Handle error response from the API
-                    console.log(error);
-                    // Do something with the error
-                }
-            });
-        });
-    });
+// credit card 
+var cleaveCreditCard = new Cleave(".input-credit-card", {
+  creditCard: true,
+  onCreditCardTypeChanged: function(type) {
+    type = type.split("15")[0];
+    $('.input-with-ccicon #ccicon').removeClass();
+    if(type!="unknown"){
+        if(type=="diners"){
+            $('.input-with-ccicon #ccicon').addClass('fab fa-cc-diners-club');
+        }else{
+            $('.input-with-ccicon #ccicon').addClass('fab fa-cc-'+type);
+        }
+    }
+  }
+});
 </script>
 </body>
 </html>

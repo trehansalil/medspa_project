@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forever Medspaa</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/fontawesome-all.min.css">
+    <link rel="stylesheet" type="text/css" href="css/iofrm-style.css">
+    <link rel="stylesheet" type="text/css" href="css/iofrm-theme11.css">
+    
+    <style>
+
+label {
+    
+    
+  margin-right: 15px;
+  line-height: 32px;
+
+}
+
+input {
+  appearance: none;
+
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+
+  border: 2px solid #999;
+  transition: 0.2s all linear;
+  margin-right: 5px;
+
+  position: relative;
+  top: 4px;
+}
+
+input:checked {
+  border: 6px solid black;
+}
+</style>
+</head>
+
+
+
+
+<body>
+    <div class="form-body">
+        <div class="row">
+            <div class="form-holder">
+                <div class="form-content">
+                    <div class="form-items">
+                        <div class="website-logo-inside">
+                            <a href="index2.html">
+                                <div class="logo">
+                                    <img class="logo-size" src="images/forever-logo.png" alt="">
+                                </div>
+                            </a>
+                        </div>
+                        <h3>Select Action</h3>
+                        <!--<p>Access to the most powerfull tool in the entire design and web industry.</p>-->
+                        <div class="page-links">
+                            <!--<a href="login11.html" class="active">Login</a><a href="register11.html">Register</a>-->
+                        </div>
+                        <form>
+                            <fieldset>
+                                <div>
+                                <input
+                                    type="radio"
+                                    id="contactChoice1"
+                                    name="contact"
+                                    value="email"
+                                    checked />
+                                <label for="contactChoice1">Ingest Update</label>
+
+                                    <input type="radio" id="contactChoice2" name="contact" value="phone" />
+                                <label for="contactChoice2">Ingest New data</label>
+
+                                
+                                </div>
+                                
+                            </fieldset>
+                            <div class="form-button">
+                                <button id="submit" type="submit" class="ibtn">Execute Script</button>
+                                  <button id="submit" type="submit" class="ibtn">Go to Patient Page</button>
+                            </div>
+                        </form>
+                        <div class="other-links">
+                            <!--<span>Or login with</span><a href="#">Facebook</a><a href="#">Google</a><a href="#">Linkedin</a>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script src="js/jquery.min.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
