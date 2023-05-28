@@ -11,11 +11,11 @@ if [[ "$1" =~ ^(1|0|true|false)$ ]]; then
     echo "Valid input."
     #  2>&1&
     python update.py update_db="$1"> logs/update.log
+    python ingestion.py sheet_name=sun_sensitivity update_db="$1" > logs/sun_sensitivity_ingestion.log 2>&1&
+    python ingestion.py sheet_name=hq update_db="$1"> logs/hq_ingestion.log 2>&1&
+    python ingestion.py sheet_name=retinol update_db="$1"> logs/retinol_ingestion.log 2>&1&
+    python ingestion.py sheet_name=sun_protection update_db="$1"> logs/sun_protection.log 2>&1&
     python ingestion.py sheet_name=procedure_risk update_db="$1"> logs/procedure_risk_ingestion.log
-    python ingestion.py sheet_name=sun_sensitivity update_db="$1" > logs/sun_sensitivity_ingestion.log
-    python ingestion.py sheet_name=hq update_db="$1"> logs/hq_ingestion.log
-    python ingestion.py sheet_name=retinol update_db="$1"> logs/retinol_ingestion.log  
-    python ingestion.py sheet_name=sun_protection update_db="$1"> logs/sun_protection.log  
     
 else
   echo "Invalid input. Please provide either 1, 0, true, or false."
