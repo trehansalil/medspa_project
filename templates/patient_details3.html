@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forever Medspaa</title>
+    <link rel="stylesheet" type="text/css" href="\static\css\bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="\static\css\fontawesome-all.min.css">
+    <link rel="stylesheet" type="text/css" href="\static\css\iofrm-style.css">
+    <link rel="stylesheet" type="text/css" href="\static\css\iofrm-theme25.css">
+</head>
+
+
+<body>
+    
+<style>
+    
+    select {
+    width: 100%;
+    min-width: 15ch;
+    max-width: 45ch;
+    border: 1px solid black;
+    border-radius: 0;
+    padding: 10px 10px 10px 10px;
+    font-size: 16px;
+    cursor: pointer;
+    line-height: 1.1;
+    background-color: #fff;
+    background-image: linear-gradient(to top, #f9f9f9, #fff 33%);
+    }
+
+    .table-responsive {
+    margin-top: 20px;
+    }
+
+    .table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ccc;
+    }
+
+    .table th,
+    .table td {
+    padding: 8px;
+    border: 1px solid #ccc;
+    }
+
+    .table th {
+    background-color: #f2f2f2;
+    }
+
+    .table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+    }
+
+    .table tbody tr:hover {
+    background-color: #e9e9e9;
+    }
+
+</style>
+<div class="form-body">
+    <div class="website-logo">
+        <a href="index.html">
+            <div class="logo">
+                <img class="logo-size" src="\static\images\forever-logo.png" alt="">
+            </div>
+        </a>
+    </div>
+    <div class="row">
+        <div class="img-holder">
+            <div class="bg"></div>
+            <div class="info-holder">
+                <!--<img class="md-size" src="images/appointment.png" alt="">-->
+            </div>
+        </div>
+        <div class="form-holder">
+            <div class="form-content">
+                <div class="form-items">
+                    <h3 class="form-title">Forever Medspaa</h3>
+                    <ul class="nav nav-tabs" id="stepsTabs" role="tablist">
+                        <li class="nav-item">
+                            <!--<a class="nav-link active" id="step1-tab" data-toggle="tab" href="#step1" role="tab" aria-controls="step1" aria-selected="true">Step1</a>-->
+                        </li>
+                        <li class="nav-item">
+                            <!--<a class="nav-link" id="step2-tab" data-toggle="tab" href="#step2" role="tab" aria-controls="step2" aria-selected="false">Step2</a>-->
+                        </li>
+                    </ul>
+                    <form>
+                        <div class="tab-content" id="stepsTabContent">
+                            <div class="tab-pane fade show active" id="step1" role="tabpanel"
+                                aria-labelledby="step1-tab">
+
+
+                                <div class="form-subtitle">Patient Name</div>
+
+                                <input type="text" id="name" name="name" required>
+
+                                <div class="form-subtitle">Email Address</div>
+
+                                <input type="email" id="email" name="email" required>
+
+                                <div class="form-subtitle">Phone</div>
+
+                                <input type="tel" id="tel" name="tel" required>
+
+
+                                <div class="form-subtitle">Sun Sensitivity</div>
+
+                                <select name="sunsensitivity" id="sunsensitivity">
+                                    <option value="Sensitive/Pale">Sensitive/Pale</option>
+                                    <option value="Lighter Brown">Lighter Brown</option>
+                                    <option value="Light brown">Light Brown</option>
+                                    <option value="Dark Brown">Dark Brown</option>
+                                    <option value="Black">Black</option>
+                                </select>
+
+
+                                <!--<div class="inline-el-holder">-->
+                                <!--    <div class="inline-el">-->
+                                <!--        <div class="rad-with-details">-->
+                                <!--            <input type="radio" id="rad1" name="rad" required checked><label for="rad1">Bill Yearly</label>-->
+                                <!--            <div class="more-info">$99/year</div>-->
+                                <!--        </div>-->
+                                <!--</div>-->
+                                <!--<div class="inline-el">-->
+                                <!--    <div class="rad-with-details">-->
+                                <!--        <input type="radio" id="rad2" name="rad" required><label for="rad2">Bill Monthly</label>-->
+                                <!--        <div class="more-info">$109/year</div>-->
+                                <!--    </div>-->
+                                </div>
+                                </div>
+                                <br>
+                                <!--<div class="separator"></div>-->
+                                <div class="form-subtitle">HQ% Prep</div>
+                                <select name="hq" id="hq">
+                                    <option value="1 wk">1 wk</option>
+                                    <option value="2 wk">2 wk</option>
+                                    <option value="4 wk">4 wk</option>
+                                    <option value="None">None</option>
+
+                                </select>
+
+                                <br>
+                                <br>
+                                <div class="form-subtitle">Retinol Adequate</div>
+                                <select name="retinol" id="retinol">
+                                    <option value="2 wk">2 wk</option>
+                                    <option value="3 wk">3 wk</option>
+                                    <option value="4 wk">4 wk</option>
+                                    <option value="None">None</option>
+
+                                </select>
+
+                                <br>
+                                <br>
+                                <div class="form-subtitle">Retinol Inadequate</div>
+                                <select name="retinol1" id="retinol1">
+                                    <option value="2 wk">2 wk</option>
+                                    <option value="3 wk">3 wk</option>
+                                    <option value="4 wk">4 wk</option>
+                                    <option value="None">None</option>
+
+                                </select>
+                                <br>
+                                <br>
+                                <div class="form-subtitle">Sun Protection</div>
+                                <select name="sun" id="sun">
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+
+                                </select>
+
+                                <br>
+                                <br>
+                                <div class="form-subtitle">Frekles</div>
+                                <select name="frekles" id="frekles">
+                                    <option value="Procedure">Procedure</option>
+                                    <option value="PIH Risk">PIH Risk</option>
+                                    <option value="PIH & Procedure Risk">PIH & Procedure Risk</option>
+                                    <option value="Frekles">Frekles</option>
+                                    <option value="LHR">LHR</option>
+                                    <option value="CIT of Procedure">CIT of Procedure</option>
+                                    <option value="Melasma">Melasma</option>
+                                </select>
+                                <!--<label>Card number</label>-->
+                                <div class="">
+                                    <!--<input type="text" class="form-control input-credit-card" placeholder="1234 1234 1234 1234">-->
+                                    <i id="ccicon"></i>
+                                </div>
+                                <div class="">
+                                    <div class="inline-el">
+                                        <!--<label>Expiry date</label>-->
+                                        <!--<input type="text" class="form-control sm-content" placeholder="MM/YY">-->
+                                    </div>
+                                    <div class="">
+                                        <!--<label>CVV</label>-->
+                                        <!--<input type="text" class="form-control sm-content" placeholder="123">-->
+                                    </div>
+                                </div>
+                                <div class="">
+                                    <div class="inline-el">
+                                        <!--<label>Country</label>-->
+                                        <!--<input type="text" class="form-control" placeholder="Bahrain">-->
+                                    </div>
+                                    <div class="">
+                                        <!--<label>Billing ZIP</label>-->
+                                        <!--<input type="text" class="form-control sm-content" placeholder="12345">-->
+                                    </div>
+                                </div>
+                                <div class="form-button text-centre">
+                                    <button type="submit" id="btn-next" class="ibtn btn-tab-next">Submit</button>
+                                </div>
+                                <!-- <div id="score-container" style="display: none;">
+                                    <h4>Client Score: <span id="client-score"></span></h4>
+                                </div> -->
+                            </div>
+                        </div>
+                        <!--    <div class="tab-pane fade" id="step2" role="tabpanel" aria-labelledby="step2-tab">-->
+                        <!--        <div class="form-subtitle">3. Confirm your personal information</div>-->
+                        <!--        <input type="text" class="form-control" placeholder="Full name">-->
+                        <!--        <input type="text" class="form-control" placeholder="Email address">-->
+                        <!--        <input type="password" class="form-control" placeholder="Password">-->
+                        <!--        <div class="form-button">-->
+                        <!--            <button id="submit" type="submit" class="ibtn">Process payment</button>-->
+                        <!--        </div>-->
+                        <!--    </div>-->
+                        <!--</div>-->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive mt-4" id="table-container" style="display: none;">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Procedure</th>
+                    <th>PIH Risk</th>
+                    <th>PIH & Procedure Risk</th>
+                    <th>Frekles</th>
+                    <th>LHR</th>
+                    <th>CIT of Procedure</th>
+                    <th>Melasma</th>
+                </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+        </table>
+    </div>
+</div>
+<script src="\static\js\jquery.min.js"></script>
+<script src="\static\js\popper.min.js"></script>
+<script src="\static\js\bootstrap.min.js"></script>
+<script src="\static\js\cleave.min.js"></script>
+<script src="\static\js\main.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#btn-next').click(function (e) {
+            e.preventDefault(); // Prevent form submission
+
+            // Collect form data
+            var formData = {
+                name: $('#name').val(),
+                email: $('#email').val(),
+                tel: $('#tel').val(),
+                sun_sensitivity: $('#sunsensitivity').val(),
+                hq: $('#hq').val(),
+                retinol_adequate: $('#retinol').val(),
+                retinol_inadequate: $('#retinol1').val(),
+                sun_protection: $('#sun').val(),
+                key: $('#frekles').val()
+            };
+
+            // Send POST request to Flask API
+            $.ajax({
+                type: 'POST',
+                url: '/submit', // Update with your Flask route
+                data: JSON.stringify(formData),
+                contentType: 'application/json',
+                success: function (response) {
+                    // Handle successful response from the API
+                    console.log(response);
+                    $('#client-score').text(response.score);
+                    $('#score-container').show();
+
+                    // Populate the table with data
+                    populateTable(response.data);
+                },
+                error: function (error) {
+                    // Handle error response from the API
+                    console.log(error);
+                    // Do something with the error
+                }
+            });
+        });
+
+        // Function to populate the table with data
+        function populateTable(data) {
+            var tableBody = $('#table-body');
+            tableBody.empty();
+
+            for (var i = 0; i < data.length; i++) {
+                var row = '<tr>' +
+                    '<td>' + data[i].procedure + '</td>' +
+                    '<td>' + data[i].pih_risk + '</td>' +
+                    '<td>' + data[i].pih_procedure_risk + '</td>' +
+                    '<td>' + data[i].Frekles + '</td>' +
+                    '<td>' + data[i].LHR + '</td>' +
+                    '<td>' + data[i].cit_of_procedure + '</td>' +
+                    '<td>' + data[i].Melasma + '</td>' +
+                    '</tr>';
+
+                tableBody.append(row);
+            }
+
+            // Show the table
+            $('#table-container').show();
+        }
+    });
+</script>
+</body>
+</html>

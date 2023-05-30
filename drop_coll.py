@@ -23,7 +23,7 @@ elif sheet_name==sheet_name5:
     coll_backup = db_backup[mongo_db_coll_sun_protection]    
 
 coll.drop()
-# coll_backup.drop()
+coll_backup.drop()
 coll_release_table.drop()
 
 print(f"Dropped both the collections for data source: {sheet_name}")

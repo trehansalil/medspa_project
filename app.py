@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 import subprocess
 import os
+import pandas as pd
 from gsheet import *
 
 app = Flask(__name__, static_folder=os.path.join(os.getcwd(), 'static'))
@@ -44,7 +45,7 @@ def run_script():
 
 @app.route('/patient_page')
 def patient_page():
-    return render_template('patient_details.html')
+    return render_template('patient_details4.html')
 
 @app.route('/submit', methods=['POST'])
 def submit_form():
@@ -73,9 +74,28 @@ def submit_form():
     else:
         client_score = sun_sensitivity - (sun_protection+retinol_adequate+retinol_inadequate+hq)
     client_score = client_score if client_score>0 else 0
-    # Return a response (e.g., success message)
-    return jsonify({'client-score': f"{client_score}"})
+    
+    json_data = []
+    
+    for record in coll_procedure_risk.find({}, {"_id":0, "created_on": 0, "updated_on": 0, "release": 0, "version": 0}):
+        jai_record = {}
+        jai_record['procedure'] = record['Modality']
+        jai_record['pih_risk'] = record['PIH Risk (0-110)']
+        jai_record['pih_procedure_risk'] = record['PIH Risk (0-110)'] + client_score
+        jai_record['Frekles'] = record['Frekles (0-100)'] if jai_record['pih_procedure_risk']<=120 else 0
+        jai_record['LHR'] = 0 if data['sun_protection']=='No' else (record['LHR (0-100)'] if jai_record['pih_procedure_risk']<=120 else 0)
+        jai_record['cit_of_procedure'] = record['CIT Degree (15-100)'] if jai_record['pih_procedure_risk']<=120 else 0
+        if (hq == 25) & (retinol_adequate==15) & (sun_protection == 15):
+            jai_record['Melasma'] = record['Melasma (0-75)'] if jai_record['pih_procedure_risk']<=120 else 0
+        else:
+            jai_record['Melasma'] = False
+        
+        json_data.append(jai_record)
+    # "created_on": 0, "updated_on": 0, "release": 0, "version": 0, 'PIH & Procedure risk': 
 
+    # Return a response (e.g., success message)
+    return jsonify({'client-score': f"{client_score}", 'data': json_data})
+       
 
 if __name__ == '__main__':
     app.run(debug=True)
