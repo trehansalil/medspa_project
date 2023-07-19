@@ -29,7 +29,8 @@ def add_numbers():
 @app.route('/run_script', methods=['POST'])
 def run_script():
     action = request.form['action']
-    print(action)
+    param2 = request.form['admin_comments']
+    print(f"Action = {action}, comments = {param2}")
     script = 'run_ingestion.sh'
     param1 = ''
     if action == 'ingest_update':
@@ -40,7 +41,7 @@ def run_script():
         message = 'Release Update/New Data Ingestion Successful'
     else:
         message = 'Invalid action'   
-    subprocess.run(["bash", script, param1], check=True)     
+    subprocess.run(["bash", script, param1, param2], check=True)     
     return jsonify(message=message)
 
 @app.route('/patient_page')
@@ -97,6 +98,8 @@ def submit_form():
         # else:
         #     jai_record['Melasma'] = False
 
+        # print(record)
+
         jai_record = {}
         jai_record['procedure'] = record['Modality']
         jai_record['pih_risk'] = record['PIH Risk (0-110)'] if record['PIH Risk (0-110)']<=110 else False
@@ -131,4 +134,5 @@ def submit_form():
        
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+    app.run(host='0.0.0.0', port=8080, debug=True)
