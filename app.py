@@ -76,21 +76,54 @@ def submit_form():
     client_score = client_score if client_score>0 else 0
     
     json_data = []
-    
+    # if data['key'] == "Procedure" key = "procedure" elif data['key'] == 'PIH Risk' key = "pih_risk" elif data['key'] == 'PIH & Procedure Risk' key = "pih_procedure_risk" else 
+    key_dict = {"Procedure": 'procedure',
+                "PIH Risk": 'pih_risk',
+                "PIH & Procedure Risk": 'pih_procedure_risk',
+                "Frekles": 'Frekles',
+                "LHR": 'LHR',
+                "CIT of Procedure": 'cit_of_procedure',
+                "Melasma": 'Melasma'}
     for record in coll_procedure_risk.find({}, {"_id":0, "created_on": 0, "updated_on": 0, "release": 0, "version": 0}):
+        # jai_record = {}
+        # jai_record['procedure'] = record['Modality']
+        # jai_record['pih_risk'] = record['PIH Risk (0-110)']
+        # jai_record['pih_procedure_risk'] = record['PIH Risk (0-110)'] + client_score
+        # jai_record['Frekles'] = record['Frekles (0-100)'] if jai_record['pih_procedure_risk']<=120 else 0
+        # jai_record['LHR'] = 0 if data['sun_protection']=='No' else (record['LHR (0-100)'] if jai_record['pih_procedure_risk']<=120 else 0)
+        # jai_record['cit_of_procedure'] = record['CIT Degree (15-100)'] if jai_record['pih_procedure_risk']<=120 else 0
+        # if (hq == 25) & (retinol_adequate==15) & (sun_protection == 15):
+        #     jai_record['Melasma'] = record['Melasma (0-75)'] if jai_record['pih_procedure_risk']<=120 else 0
+        # else:
+        #     jai_record['Melasma'] = False
+
         jai_record = {}
         jai_record['procedure'] = record['Modality']
-        jai_record['pih_risk'] = record['PIH Risk (0-110)']
+        jai_record['pih_risk'] = record['PIH Risk (0-110)'] if record['PIH Risk (0-110)']<=110 else False
         jai_record['pih_procedure_risk'] = record['PIH Risk (0-110)'] + client_score
+        jai_record['pih_procedure_risk'] = jai_record['pih_procedure_risk'] if jai_record['pih_procedure_risk']<=120 else False
+
         jai_record['Frekles'] = record['Frekles (0-100)'] if jai_record['pih_procedure_risk']<=120 else 0
+        jai_record['Frekles'] = jai_record['Frekles'] if ((jai_record['Frekles']<=100) & (jai_record['Frekles']>=25)) else False
+
         jai_record['LHR'] = 0 if data['sun_protection']=='No' else (record['LHR (0-100)'] if jai_record['pih_procedure_risk']<=120 else 0)
+        jai_record['LHR'] = jai_record['LHR'] if (jai_record['LHR']>0) else False
+
         jai_record['cit_of_procedure'] = record['CIT Degree (15-100)'] if jai_record['pih_procedure_risk']<=120 else 0
+        jai_record['cit_of_procedure'] = jai_record['cit_of_procedure'] if ((jai_record['cit_of_procedure']<=150) & (jai_record['cit_of_procedure']>=30)) else False
+
         if (hq == 25) & (retinol_adequate==15) & (sun_protection == 15):
             jai_record['Melasma'] = record['Melasma (0-75)'] if jai_record['pih_procedure_risk']<=120 else 0
         else:
-            jai_record['Melasma'] = False
+            jai_record['Melasma'] = False        
         
         json_data.append(jai_record)
+    import pandas as pd
+    jai_data = pd.DataFrame.from_dict(json_data)
+    jai_data = jai_data.loc[jai_data[key_dict[data['key']]] != False, :]
+    json_data = jai_data.sort_values(by=[key_dict[data['key']]]).to_dict(orient='records')
+    
+
     # "created_on": 0, "updated_on": 0, "release": 0, "version": 0, 'PIH & Procedure risk': 
 
     # Return a response (e.g., success message)
