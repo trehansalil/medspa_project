@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, render_template
 import subprocess
 import os
 import pandas as pd
+from datetime import datetime
 from gsheet import *
 
 app = Flask(__name__, static_folder=os.path.join(os.getcwd(), 'static'))
@@ -52,8 +53,18 @@ def patient_page():
 def submit_form():
     data = request.get_json()
     # Process the form data as needed
-    print(data)
-    print("\n")
+
+    data['tel'] = data['tel'].replace(" ", "").strip()
+    data['name'] = data['name'].replace("  ", " ").strip().title()
+    data['email'] = data['email'].lower().strip() 
+
+    data['_id'], data['_is_new'], prev_recos = generate_custom_id(name=data['name'], email=data['email'], phone=data['tel'])
+    if data['_is_new']:
+        data['created_at'] = datetime.now() 
+        data['updated_at'] = data['created_at']
+    else:
+        data['updated_at'] = datetime.now()
+
 
     sun_sensitivity= coll_sun_sensitivity.find_one({"Sun Sensitivity": data['sun_sensitivity']})['Values']
     retinol_adequate = coll_retinol.find_one({"Retinol": str(data['retinol_adequate']), "Category": "Adequate"})['Values']
@@ -68,6 +79,7 @@ def submit_form():
     #     sun_protection = 0
     print(sun_sensitivity, retinol_adequate, retinol_inadequate, hq)
     client_score = 0
+
     if data['sun_sensitivity'] == "Dark Brown":
         client_score = sun_sensitivity - 0.3*(sun_protection+retinol_adequate+retinol_inadequate+hq)
     elif data['sun_sensitivity'] == 'Black':
@@ -75,6 +87,8 @@ def submit_form():
     else:
         client_score = sun_sensitivity - (sun_protection+retinol_adequate+retinol_inadequate+hq)
     client_score = client_score if client_score>0 else 0
+
+    data['latest_client_score'] = client_score
     
     json_data = []
     # if data['key'] == "Procedure" key = "procedure" elif data['key'] == 'PIH Risk' key = "pih_risk" elif data['key'] == 'PIH & Procedure Risk' key = "pih_procedure_risk" else 
@@ -125,7 +139,30 @@ def submit_form():
     jai_data = pd.DataFrame.from_dict(json_data)
     jai_data = jai_data.loc[jai_data[key_dict[data['key']]] != False, :]
     json_data = jai_data.sort_values(by=[key_dict[data['key']]]).to_dict(orient='records')
+
+    inputs = {}   
+    print(data)
+    print("\n")
+    rem_cols = ['sun_sensitivity', 'retinol_adequate', 'retinol_inadequate', 'sun_protection', 'hq']
+    for rem_col in rem_cols:
+        inputs[rem_col] = data.pop(rem_col)
     
+
+    if data['_is_new']:
+        recos_data = {'client-score': client_score, 'inputs': [inputs], 'recos': json_data, 'created_at': data['updated_at']}
+        data['recommended_data'] = {data['key']:[recos_data]}
+
+        data.pop('key')
+        coll_user_activities.insert_one(data)
+    else:
+        recos_data = {'client-score': client_score, 'inputs': [inputs], 'recos': json_data, 'created_at': data['updated_at']}
+        data['recommended_data'] = prev_recos
+        if data['key'] in data['recommended_data']:
+            data['recommended_data'][data['key']].append(recos_data)
+        else:
+            data['recommended_data'].update({data['key']:[recos_data]})
+        data.pop('key')
+        coll_user_activities.update_one(filter={"_id": data['_id']}, update={'$set': data}, upsert=True)
 
     # "created_on": 0, "updated_on": 0, "release": 0, "version": 0, 'PIH & Procedure risk': 
 
@@ -134,5 +171,6 @@ def submit_form():
        
 
 if __name__ == '__main__':
-    app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+    app.secret_key = 'A1Zr98j/3yX R~XHH!jmN]LWX/,?RT'
     app.run(host='0.0.0.0', port=8080, debug=True)
+    client.close()
