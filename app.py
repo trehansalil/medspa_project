@@ -128,6 +128,9 @@ def submit_form():
 
         jai_record['cit_of_procedure'] = record['CIT Degree (15-100)'] if jai_record['pih_procedure_risk']<=120 else 0
         jai_record['cit_of_procedure'] = jai_record['cit_of_procedure'] if ((jai_record['cit_of_procedure']<=150) & (jai_record['cit_of_procedure']>=30)) else False
+        for new_var in ['Down time',	'MDBTW',	'Treatment',	'Maintain',	'Rec in Summer' ]:
+            jai_record[new_var] = record[new_var]
+       
 
         if (hq == 25) & (retinol_adequate==15) & (sun_protection == 15):
             jai_record['Melasma'] = record['Melasma (0-75)'] if jai_record['pih_procedure_risk']<=120 else 0
