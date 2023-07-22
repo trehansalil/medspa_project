@@ -28,7 +28,10 @@ elif sheet_name==sheet_name4:
     coll_backup = db_backup[mongo_db_coll_retinol]
 elif sheet_name==sheet_name5:
     coll = db[mongo_db_coll_sun_protection]
-    coll_backup = db_backup[mongo_db_coll_sun_protection]    
+    coll_backup = db_backup[mongo_db_coll_sun_protection]   
+elif sheet_name==sheet_name_equip_db_sheet:
+    coll = db[sheet_name_equip_db_sheet]
+    coll_backup = db_backup[sheet_name_equip_db_sheet]
 else:
     print('No Collection Created')
 

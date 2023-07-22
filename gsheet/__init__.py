@@ -30,6 +30,8 @@ backup_coll = config_parser.getboolean('mongo_config', 'backup_coll')
 mongo_db_user_activity_name = config_parser.get('mongo_config', 'mongo_db_user_activity_name')
 mongo_db_coll_user = config_parser.get('mongo_config', 'mongo_db_coll_user')
 
+mongo_db_coll_equipment_database = config_parser.get('mongo_config', 'mongo_db_coll_equipment_database')
+
 # All file inputs
 g_sheets_url = config_parser.get('input_files', 'g_sheets_url')
 sheet_name1 = config_parser.get('input_files', 'sheet_name1')
@@ -37,6 +39,7 @@ sheet_name2 = config_parser.get('input_files', 'sheet_name2')
 sheet_name3 = config_parser.get('input_files', 'sheet_name3')
 sheet_name4 = config_parser.get('input_files', 'sheet_name4')
 sheet_name5 = config_parser.get('input_files', 'sheet_name5')
+sheet_name_equip_db_sheet = config_parser.get('input_files', 'sheet_name5')
 
 client = MongoClient(mongo_db_uri)
 db = client[mongo_db_name]
