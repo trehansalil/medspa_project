@@ -30,8 +30,8 @@ elif sheet_name==sheet_name5:
     coll = db[mongo_db_coll_sun_protection]
     coll_backup = db_backup[mongo_db_coll_sun_protection]   
 elif sheet_name==sheet_name_equip_db_sheet:
-    coll = db[sheet_name_equip_db_sheet]
-    coll_backup = db_backup[sheet_name_equip_db_sheet]
+    coll = db[mongo_db_coll_equipment_database]
+    coll_backup = db_backup[mongo_db_coll_equipment_database]
 else:
     print('No Collection Created')
 
@@ -39,7 +39,9 @@ j = 1
 import pymongo
 max_release = None
 for i in tqdm(data[:-1]):
-
+    if sheet_name==sheet_name_equip_db_sheet:
+        i['_id'], i['_is_new_equip'] = mongo_id_generator(i['Company'], i['Platform'], i['Handpiece'],	i['Modality'], collection_name=coll)
+        i['modality_id'], i['_is_new_modality'] = mongo_id_generator(i['Company'], i['Handpiece'],	i['Modality'], collection_name=coll)
     i['created_on'] = datetime.now()
     i['updated_on'] = datetime.now()
 
@@ -56,50 +58,10 @@ for i in tqdm(data[:-1]):
                     coll_backup.insert_many(coll.find())
 
             coll.drop()
-
-            # if coll.count_documents({})>0:
-
-                # if backup_coll:
-                #     coll_backup.insert_many(coll.find())
-
-
-                # i['release'] = max_release
-                # i['version'] = max_version
-
-                # if update_db:
-                #     # updating records: new version, same release
-                #     i['release'] = max_release
-                #     i['version'] = max_version+1
-
-                # else:
-                #     # inserting new records: version = 1, new release
-                #     i['release'] = max_release+1
-                #     i['version'] = 1
-                # coll.drop()                
-                
-            # else:
-            #     i['release'] = 1
-            #     i['version'] = 1
-
+            
             coll.insert_one(i)
             j+=1
         else:
-            # if max_release is not None:
-
-            #     if update_db:
-            #         # updating records: new version, same release
-            #         i['release'] = max_release
-            #         i['version'] = max_version+1
-
-            #     else:
-            #         # inserting new records: version = 1, new release
-            #         i['release'] = max_release+1
-            #         i['version'] = 1
-            #     # coll.drop()                
-                
-            # else:
-            #     i['release'] = 1
-            #     i['version'] = 1
             coll.insert_one(i)
             j+=1
 

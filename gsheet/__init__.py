@@ -80,15 +80,15 @@ def variable_extractor(var_name='var1', var_type='string'):
     return var
 
 
-def check_id(id):
+def check_id(id, collection_name=coll_user_activities):
 
-    sample_data = coll_user_activities.find_one({"_id": id})
+    sample_data = collection_name.find_one({"_id": id})
     if sample_data is None:
         return True, {}
     else:
         return False, sample_data['recommended_data']
     
-def generate_custom_id(name, email, phone):
+def generate_custom_id(name, email, phone, collection_name=coll_user_activities):
     # Concatenate the name, email, and phone number into a single string
     phone = phone.replace(" ", "")
     name = name.lower().strip().replace("  ", " ")
@@ -101,9 +101,31 @@ def generate_custom_id(name, email, phone):
     # Take the first 12 bytes of the hash and convert it to a 24-character hexadecimal string
 
     custom_id = ObjectId(sha256_hash[:24])
-    bool_exists, prev_recos = check_id(custom_id)
+    bool_exists, prev_recos = check_id(id=custom_id, collection_name=coll_user_activities)
     return custom_id, bool_exists, prev_recos
 
+def check_id_exists(id, collection_name=coll_user_activities):
+
+    sample_data = collection_name.find_one({"_id": id})
+    if sample_data is None:
+        return True
+    else:
+        return False
+
+def mongo_id_generator(*args, collection_name):
+    # Concatenate all the input arguments into a single string
+    data_string = "".join(str(arg).lower().strip() for arg in args)
+
+    # Hash the data string using the SHA256 algorithm
+    sha256_hash = hashlib.sha256(data_string.encode()).hexdigest()
+
+    # Take the first 12 bytes of the hash and convert it to a 24-character hexadecimal string
+    custom_id = ObjectId(sha256_hash[:24])
+    
+    # Assuming check_id is a function that checks if the custom_id exists in the database
+    bool_exists = check_id_exists(id=custom_id,collection_name=collection_name)
+    
+    return custom_id, bool_exists
 
 
 # # Example usage:
