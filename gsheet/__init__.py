@@ -39,7 +39,7 @@ sheet_name2 = config_parser.get('input_files', 'sheet_name2')
 sheet_name3 = config_parser.get('input_files', 'sheet_name3')
 sheet_name4 = config_parser.get('input_files', 'sheet_name4')
 sheet_name5 = config_parser.get('input_files', 'sheet_name5')
-sheet_name_equip_db_sheet = config_parser.get('input_files', 'sheet_name5')
+sheet_name_equip_db_sheet = config_parser.get('input_files', 'sheet_name_equip_db_sheet')
 
 client = MongoClient(mongo_db_uri)
 db = client[mongo_db_name]
