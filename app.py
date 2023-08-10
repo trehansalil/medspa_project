@@ -188,12 +188,12 @@ def select_company():
     # plant_name = request.args.get('plant_name')
     # Find the machinery document with the specified machinery type and plant name in the database
     handpiece = coll_procedure_risk.distinct("Handpiece", {'Company': company_name})
-    if handpiece:
+    if handpiece != []:
         # If the machinery document is found, return a success message as a JSON response
-        return jsonify({'message': f'Successfully selected {company_name}.', 'handpiece': handpiece})
+        return jsonify({'message': f'Successfully identified list of handpieces for company: {company_name}.', 'handpiece': handpiece})
     else:
         # If the machinery document is not found, return an error message as a JSON response with a 404 status code
-        return jsonify({'error': f'Company not found for {company_name}.'}), 404      
+        return jsonify({'error': f'Handpiece not found for company: {company_name}.'}), 404      
 
 # Select Machinery Endpoint
 @app.route('/api/select-handpiece')
@@ -203,12 +203,12 @@ def select_handpiece():
     handpiece = request.args.get('handpiece')
     # Find the machinery document with the specified machinery type and plant name in the database
     modality = coll_procedure_risk.distinct("Modality", {'Company': company_name, "Handpiece": handpiece})
-    if modality:
+    if modality != []:
         # If the machinery document is found, return a success message as a JSON response
-        return jsonify({'message': f'Successfully selected Handpie: {company_name}.', 'handpiece': handpiece})
+        return jsonify({'message': f'Successfully selected handpiece for company: {company_name}.', 'handpiece': handpiece})
     else:
         # If the machinery document is not found, return an error message as a JSON response with a 404 status code
-        return jsonify({'error': f'Company not found for {company_name}.'}), 404      
+        return jsonify({'error': f'Handpiece selection unsuccessful for company: {company_name}.'}), 404      
 
 if __name__ == '__main__':
     app.secret_key = 'A1Zr98j/3yX R~XHH!jmN]LWX/,?RT'
