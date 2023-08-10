@@ -43,13 +43,13 @@ for i in tqdm(data[:-1]):
         if (i['Company']=='') & (i['Platform']=='') & (i['Handpiece']=='') & (i['Modality']==''):
             continue
         else:
-            i['_id'], i['_is_new_equip'] = mongo_id_generator(i['Company'], i['Platform'], i['Handpiece'],	i['Modality'], collection_name=coll)
+            i['equip_id'], i['_is_new_equip'] = mongo_id_generator(i['Company'], i['Platform'], i['Handpiece'],	i['Modality'], collection_name=coll)
             i['modality_id'], _ = mongo_id_generator(i['Company'], i['Handpiece'],	i['Modality'], collection_name=coll)
     elif sheet_name==sheet_name1:
         if (i['Company']=='') & (i['Handpiece']=='') & (i['Modality']==''):
             continue
         else:       
-            i['_id'], i['_is_new_modality'] = mongo_id_generator(i['Company'], i['Handpiece'],	i['Modality'], collection_name=coll)        
+            i['modality_id'], i['_is_new_modality'] = mongo_id_generator(i['Company'], i['Handpiece'],	i['Modality'], collection_name=coll)        
     i['created_on'] = datetime.now()
     i['updated_on'] = datetime.now()
 
