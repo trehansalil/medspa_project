@@ -182,7 +182,7 @@ def get_company_names():
 
 # Select Machinery Endpoint
 @app.route('/api/select-company')
-def select_machinery():
+def select_company():
     # Get the machinery type and plant name from the query parameters
     company_name = request.args.get('company_name')
     # plant_name = request.args.get('plant_name')
@@ -197,7 +197,7 @@ def select_machinery():
 
 # Select Machinery Endpoint
 @app.route('/api/select-handpiece')
-def select_machinery():
+def select_handpiece():
     # Get the machinery type and plant name from the query parameters
     company_name = request.args.get('company_name')
     handpiece = request.args.get('handpiece')
