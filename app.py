@@ -114,6 +114,8 @@ def submit_form():
 
         # print(record)
 
+        record = {i: record[i] if str(record[i]).strip() != '' else 0 for i in record}
+
         jai_record = {}
         jai_record['procedure'] = record['Modality']
         jai_record['pih_risk'] = record['PIH Risk (0-110)'] if record['PIH Risk (0-110)']<=110 else False
