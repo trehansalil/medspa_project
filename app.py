@@ -183,7 +183,7 @@ def get_company_names():
     return jsonify(company_names)
 
 # Select Machinery Endpoint
-@app.route('/api/select-company')
+@app.route('/api/handpiece')
 def select_company():
     # Get the machinery type and plant name from the query parameters
     company_name = request.args.get('company_name')
@@ -198,7 +198,7 @@ def select_company():
         return jsonify({'error': f'Handpiece not found for company: {company_name}.'}), 404      
 
 # Select Machinery Endpoint
-@app.route('/api/select-handpiece')
+@app.route('/api/modality')
 def select_handpiece():
     # Get the machinery type and plant name from the query parameters
     company_name = request.args.get('company_name')
@@ -207,10 +207,10 @@ def select_handpiece():
     modality = coll_procedure_risk.distinct("Modality", {'Company': company_name, "Handpiece": handpiece})
     if modality != []:
         # If the machinery document is found, return a success message as a JSON response
-        return jsonify({'message': f'Successfully selected handpiece for company: {company_name}.', 'handpiece': handpiece})
+        return jsonify({'message': f'Successfully selected modality for company: {company_name} & handpiece: {handpiece}.', 'modality': modality})
     else:
         # If the machinery document is not found, return an error message as a JSON response with a 404 status code
-        return jsonify({'error': f'Handpiece selection unsuccessful for company: {company_name}.'}), 404      
+        return jsonify({'error': f'Modality selection unsuccessful for company: {company_name} & handpiece: {handpiece}.'}), 404
 
 if __name__ == '__main__':
     app.secret_key = 'A1Zr98j/3yX R~XHH!jmN]LWX/,?RT'
