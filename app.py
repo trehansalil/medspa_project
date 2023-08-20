@@ -194,9 +194,9 @@ def do_registration(collection_name=coll_client_database):
         
         if record['_is_new']:
             collection_name.insert_one(record)
-            return jsonify({'msg': 'Registration Successful'}), 200
+            return jsonify({'message': 'Registration Successful'}), 200
         else:
-            return jsonify({'msg': 'User already exists'}), 200
+            return jsonify({'message': 'User already exists'}), 200
         # Return the company names as a JSON response
         
     except:
