@@ -177,40 +177,72 @@ def submit_form():
 # Company Names Endpoint
 @app.route('/api/company')
 def get_company_names():
-    # Get the distinct company names
-    company_names = coll_procedure_risk.distinct('Company')
-    # Return the company names as a JSON response
-    return jsonify(company_names)
+    try:
+        # Get the distinct company names
+        company_names = coll_procedure_risk.distinct('Company')
+        # Return the company names as a JSON response
+        return jsonify(company_names)
+    except:
+        return jsonify({'error': f'Sorry Data not found, Something went wrong'}), 404
 
+# Select Machinery Endpoint
+@app.route('/api/platform')
+def select_company():
+    try:
+        # Get the machinery type and plant name from the query parameters
+        company_name = request.args.get('company_name')
+        # plant_name = request.args.get('plant_name')
+        # Find the machinery document with the specified machinery type and plant name in the database
+        platform = coll_procedure_risk.distinct("Platform", {'Company': company_name})
+        if platform != []:
+            # If the machinery document is found, return a success message as a JSON response
+            return jsonify({'message': f'Successfully identified list of platforms for company: {company_name}.', 'platform': platform})
+        else:
+            # If the machinery document is not found, return an error message as a JSON response with a 404 status code
+            # return jsonify({'error': f'Platform not found for company: {company_name}.'}), 404 
+            return jsonify({'error': f'Sorry Data not found, Something went wrong'}), 404
+    except:
+        return jsonify({'error': f'Sorry Data not found, Something went wrong'}), 404
+        
+    
 # Select Machinery Endpoint
 @app.route('/api/handpiece')
 def select_company():
-    # Get the machinery type and plant name from the query parameters
-    company_name = request.args.get('company_name')
-    # plant_name = request.args.get('plant_name')
-    # Find the machinery document with the specified machinery type and plant name in the database
-    handpiece = coll_procedure_risk.distinct("Handpiece", {'Company': company_name})
-    if handpiece != []:
-        # If the machinery document is found, return a success message as a JSON response
-        return jsonify({'message': f'Successfully identified list of handpieces for company: {company_name}.', 'handpiece': handpiece})
-    else:
-        # If the machinery document is not found, return an error message as a JSON response with a 404 status code
-        return jsonify({'error': f'Handpiece not found for company: {company_name}.'}), 404      
+    try:
+        # Get the machinery type and plant name from the query parameters
+        company_name = request.args.get('company_name')
+        platform = request.args.get('platform')
+        # Find the machinery document with the specified machinery type and plant name in the database
+        handpiece = coll_procedure_risk.distinct("Handpiece", {'Company': company_name, "Platform": platform})
+        if handpiece != []:
+            # If the machinery document is found, return a success message as a JSON response
+            return jsonify({'message': f'Successfully identified list of handpieces for company: {company_name}, platform: {platform}.', 'handpiece': handpiece})
+        else:
+            # If the machinery document is not found, return an error message as a JSON response with a 404 status code
+            # return jsonify({'error': f'Handpiece not found for company: {company_name}, platform: {platform}.'}), 404  
+            return jsonify({'error': f'Sorry Data not found, Something went wrong'}), 404
+    except:
+          return jsonify({'error': f'Sorry Data not found, Something went wrong'}), 404
 
 # Select Machinery Endpoint
 @app.route('/api/modality')
 def select_handpiece():
-    # Get the machinery type and plant name from the query parameters
-    company_name = request.args.get('company_name')
-    handpiece = request.args.get('handpiece')
-    # Find the machinery document with the specified machinery type and plant name in the database
-    modality = coll_procedure_risk.distinct("Modality", {'Company': company_name, "Handpiece": handpiece})
-    if modality != []:
-        # If the machinery document is found, return a success message as a JSON response
-        return jsonify({'message': f'Successfully selected modality for company: {company_name} & handpiece: {handpiece}.', 'modality': modality})
-    else:
-        # If the machinery document is not found, return an error message as a JSON response with a 404 status code
-        return jsonify({'error': f'Modality selection unsuccessful for company: {company_name} & handpiece: {handpiece}.'}), 404
+    try:
+        # Get the machinery type and plant name from the query parameters
+        company_name = request.args.get('company_name')
+        platform = request.args.get('platform')
+        handpiece = request.args.get('handpiece')
+        # Find the machinery document with the specified machinery type and plant name in the database
+        modality = coll_procedure_risk.distinct("Modality", {'Company': company_name, "Platform": platform, "Handpiece": handpiece})
+        if modality != []:
+            # If the machinery document is found, return a success message as a JSON response
+            return jsonify({'message': f'Successfully selected modality for company: {company_name}, platform: {platform} & handpiece: {handpiece}.', 'modality': modality})
+        else:
+            # If the machinery document is not found, return an error message as a JSON response with a 404 status code
+            # return jsonify({'error': f'Modality selection unsuccessful for company: {company_name}, platform: {platform} & handpiece: {handpiece}.'}), 404
+            return jsonify({'error': f'Sorry Data not found, Something went wrong'}), 404
+    except:
+        return jsonify({'error': f'Sorry Data not found, Something went wrong'}), 404
 
 if __name__ == '__main__':
     app.secret_key = 'A1Zr98j/3yX R~XHH!jmN]LWX/,?RT'
