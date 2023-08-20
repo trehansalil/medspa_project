@@ -184,6 +184,10 @@ def do_registration(collection_name=coll_client_database):
         username = request.args.get('username')
         email = request.args.get('email')
         password = request.args.get('password')  
+        
+        if (first_name is None) | (last_name is None) | (username is None) | (email is None) | (password is None):
+            return jsonify({'error': f'Sorry some error has occured please try again later'}), 404
+        
         record['first_name'] = first_name
         record['last_name'] = last_name
         record['username'] = username
