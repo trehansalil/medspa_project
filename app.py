@@ -204,10 +204,10 @@ def do_registration(collection_name=coll_client_database):
 
 # Company Names Endpoint
 @app.route('/api/company')
-def get_company_names():
+def get_company_names(collection_name=coll_equipment_database):
     try:
         # Get the distinct company names
-        company_names = coll_procedure_risk.distinct('Company')
+        company_names = collection_name.distinct('Company')
         # Return the company names as a JSON response
         return jsonify(company_names)
     except:
@@ -215,33 +215,39 @@ def get_company_names():
 
 # Select Machinery Endpoint
 @app.route('/api/platform')
-def select_platform():
+def select_platform(collection_name=coll_equipment_database):
     try:
         # Get the machinery type and plant name from the query parameters
         company_name = request.args.get('company_name')
+        print("\n")
+        print(company_name)
         # plant_name = request.args.get('plant_name')
         # Find the machinery document with the specified machinery type and plant name in the database
-        platform = coll_procedure_risk.distinct("Platform", {'Company': company_name})
+        print(company_name)
+        platform = collection_name.distinct("Platform", {'Company': company_name})
+        print(company_name)
         if platform != []:
             # If the machinery document is found, return a success message as a JSON response
             return jsonify({'message': f'Successfully identified list of platforms for company: {company_name}.', 'platform': platform})
         else:
             # If the machinery document is not found, return an error message as a JSON response with a 404 status code
             # return jsonify({'error': f'Platform not found for company: {company_name}.'}), 404 
+            
             return jsonify({'error': f'Sorry Data not found, Something went wrong'}), 404
-    except:
+    except Exception as e:
+        print(company_name, e)
         return jsonify({'error': f'Sorry Data not found, Something went wrong'}), 404
         
     
 # Select Machinery Endpoint
 @app.route('/api/handpiece')
-def select_handpiece():
+def select_handpiece(collection_name=coll_equipment_database):
     try:
         # Get the machinery type and plant name from the query parameters
         company_name = request.args.get('company_name')
         platform = request.args.get('platform')
         # Find the machinery document with the specified machinery type and plant name in the database
-        handpiece = coll_procedure_risk.distinct("Handpiece", {'Company': company_name, "Platform": platform})
+        handpiece = collection_name.distinct("Handpiece", {'Company': company_name, "Platform": platform})
         if handpiece != []:
             # If the machinery document is found, return a success message as a JSON response
             return jsonify({'message': f'Successfully identified list of handpieces for company: {company_name}, platform: {platform}.', 'handpiece': handpiece})
@@ -254,14 +260,14 @@ def select_handpiece():
 
 # Select Machinery Endpoint
 @app.route('/api/modality')
-def select_modality():
+def select_modality(collection_name=coll_equipment_database):
     try:
         # Get the machinery type and plant name from the query parameters
         company_name = request.args.get('company_name')
         platform = request.args.get('platform')
         handpiece = request.args.get('handpiece')
         # Find the machinery document with the specified machinery type and plant name in the database
-        modality = coll_procedure_risk.distinct("Modality", {'Company': company_name, "Platform": platform, "Handpiece": handpiece})
+        modality = collection_name.distinct("Modality", {'Company': company_name, "Platform": platform, "Handpiece": handpiece})
         if modality != []:
             # If the machinery document is found, return a success message as a JSON response
             return jsonify({'message': f'Successfully selected modality for company: {company_name}, platform: {platform} & handpiece: {handpiece}.', 'modality': modality})
