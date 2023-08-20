@@ -39,6 +39,7 @@ j = 1
 import pymongo
 max_release = None
 for i in tqdm(data[:-1]):
+    i = {j: i[j].strip() for j in i}
     if sheet_name==sheet_name_equip_db_sheet:
         if (i['Company']=='') & (i['Platform']=='') & (i['Handpiece']=='') & (i['Modality']==''):
             continue
