@@ -175,6 +175,34 @@ def submit_form():
     return jsonify({'client-score': f"{client_score}", 'data': json_data})
 
 # Company Names Endpoint
+@app.route('/api/registration')
+def do_registration(collection_name=coll_client_database):
+    record = {}
+    try:
+        first_name = request.args.get('first_name')
+        last_name = request.args.get('last_name')
+        username = request.args.get('username')
+        email = request.args.get('email')
+        password = request.args.get('password')  
+        record['first_name'] = first_name
+        record['last_name'] = last_name
+        record['username'] = username
+        record['email'] = email
+        record['password'] = password
+        record['_id'], record['_is_new'] = mongo_id_generator(email, collection_name=collection_name)      
+
+        
+        if record['_is_new']:
+            collection_name.insert_one(record)
+            return jsonify({'msg': 'Registration Successful'}), 200
+        else:
+            return jsonify({'msg': 'User already exists'}), 200
+        # Return the company names as a JSON response
+        
+    except:
+        return jsonify({'error': f'Sorry some error has occured please try again later'}), 404
+
+# Company Names Endpoint
 @app.route('/api/company')
 def get_company_names():
     try:
@@ -187,7 +215,7 @@ def get_company_names():
 
 # Select Machinery Endpoint
 @app.route('/api/platform')
-def select_company():
+def select_platform():
     try:
         # Get the machinery type and plant name from the query parameters
         company_name = request.args.get('company_name')
@@ -207,7 +235,7 @@ def select_company():
     
 # Select Machinery Endpoint
 @app.route('/api/handpiece')
-def select_company():
+def select_handpiece():
     try:
         # Get the machinery type and plant name from the query parameters
         company_name = request.args.get('company_name')
@@ -226,7 +254,7 @@ def select_company():
 
 # Select Machinery Endpoint
 @app.route('/api/modality')
-def select_handpiece():
+def select_modality():
     try:
         # Get the machinery type and plant name from the query parameters
         company_name = request.args.get('company_name')
