@@ -46,12 +46,15 @@ client = MongoClient(mongo_db_uri)
 db = client[mongo_db_name]
 db_backup = client[mongo_db_backup_name]
 db_user_activities = client[mongo_db_user_activity_name]
+coll_equipment_database = db[mongo_db_coll_equipment_database]
 
 coll_release_table = db[mongo_coll_release_table]
 coll_release_table_backup = db_backup[mongo_coll_release_table]
 
 coll_user_activities = db_user_activities[mongo_db_coll_user]
 coll_client_database = db_user_activities[client_database]
+
+
 
 def variable_extractor(var_name='var1', var_type='string'):
     var = None
