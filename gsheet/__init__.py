@@ -27,7 +27,7 @@ mongo_db_coll_sun_protection = config_parser.get('mongo_config', 'mongo_db_coll_
 mongo_coll_release_table = config_parser.get('mongo_config', 'mongo_coll_release_table')
 backup_coll = config_parser.getboolean('mongo_config', 'backup_coll')
 
-client_database = config_parser.getboolean('mongo_config', 'client_database')
+client_database = config_parser.get('mongo_config', 'client_database')
 mongo_db_user_activity_name = config_parser.get('mongo_config', 'mongo_db_user_activity_name')
 mongo_db_coll_user = config_parser.get('mongo_config', 'mongo_db_coll_user')
 
