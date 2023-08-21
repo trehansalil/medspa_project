@@ -175,7 +175,7 @@ def submit_form():
     return jsonify({'client-score': f"{client_score}", 'data': json_data})
 
 # Company Names Endpoint
-@app.route('/api/registration')
+@app.route('/api/registration', methods=['POST'])
 def do_registration(collection_name=coll_client_database):
     record = {}
     try:
