@@ -174,7 +174,7 @@ def submit_form():
     # Return a response (e.g., success message)
     return jsonify({'client-score': f"{client_score}", 'data': json_data})
 
-# Company Names Endpoint
+# Registration Endpoint
 @app.route('/api/registration', methods=['POST'])
 def do_registration(collection_name=coll_client_database):
     record = {}
@@ -205,6 +205,35 @@ def do_registration(collection_name=coll_client_database):
         
     except:
         return jsonify({'error': f'Sorry some error has occured please try again later'}), 404
+    
+# Registration Endpoint
+@app.route('/api/login', methods=['POST'])
+def do_registration(collection_name=coll_client_database):
+    record = {}
+    try:
+        # first_name = request.args.get('first_name')
+        # last_name = request.args.get('last_name')
+        username = request.args.get('username')
+        # email = request.args.get('email')
+        password = request.args.get('password')  
+        
+        if (username is None) | (password is None):
+            return jsonify({'error': f'Sorry some error has occured please try again later'}), 404
+        
+
+        record['username'] = username
+        record['password'] = password
+
+        record_content = collection_name.find_one(record)
+
+        if record_content is None:
+            return jsonify({'message': "User doesn't exists"}), 404
+        else:
+            return jsonify({'message': 'User exists', "content": record_content}), 200
+        # Return the company names as a JSON response
+        
+    except:
+        return jsonify({'error': f'Sorry some error has occured please try again later'}), 404    
 
 # Company Names Endpoint
 @app.route('/api/company')
