@@ -208,7 +208,7 @@ def do_registration(collection_name=coll_client_database):
     
 # Registration Endpoint
 @app.route('/api/login', methods=['POST'])
-def do_registration(collection_name=coll_client_database):
+def do_login(collection_name=coll_client_database):
     record = {}
     try:
         # first_name = request.args.get('first_name')
