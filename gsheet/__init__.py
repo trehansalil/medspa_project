@@ -109,7 +109,7 @@ def generate_custom_id(name, email, phone, collection_name=coll_user_activities)
     bool_exists, prev_recos = check_id(id=custom_id, collection_name=coll_user_activities)
     return custom_id, bool_exists, prev_recos
 
-def _is_new_checker(id, collection_name=coll_user_activities, variable='_id'):
+def _is_new_checker(id, collection_name=coll_user_activities, variable):
 
     sample_data = collection_name.find_one({variable: id})
     if sample_data is None:
