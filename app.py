@@ -195,13 +195,18 @@ def do_registration(collection_name=coll_client_database):
         record['password'] = password
         record['_id'], record['_is_new'] = mongo_id_generator(email, collection_name=collection_name, variable='_id')   
 
-        _, record['_is_username_new'] = mongo_id_generator(username, collection_name=collection_name, variable='username')   
-
+        # _is_new_checker(id=username, collection_name=coll_user_activities, variable='username')
+        record['_is_username_new'] = _is_new_checker(id=username, collection_name=collection_name, variable='username')   
+        
+        print("\n")
+        
         print(record)
+        
+        print("\n")
         if not record['_is_username_new']:
             # collection_name.insert_one(record)
             return jsonify({'message': 'Username Taken. Please choose a different username'}), 200
-        elif (record['_is_new']):
+        elif (record['_is_new']) & (record['_is_username_new']):
             collection_name.insert_one(record)
             return jsonify({'message': 'Registration Successful'}), 200        
         else:
