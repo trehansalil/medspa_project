@@ -193,11 +193,11 @@ def do_registration(collection_name=coll_client_database):
         record['username'] = username
         record['email'] = email
         record['password'] = password
-        record['_id'], record['_is_new'] = mongo_id_generator(email, collection_name=collection_name)   
+        record['_id'], record['_is_new'] = mongo_id_generator(email, collection_name=collection_name, variable='_id')   
 
-        _, record['_is_username'] = mongo_id_generator(username, collection_name=collection_name)   
+        _, record['_is_username'] = mongo_id_generator(username, collection_name=collection_name, variable='username')   
 
-        
+        print(record)
         if (not record['_is_username_taken']):
             # collection_name.insert_one(record)
             return jsonify({'message': 'Username Taken. Please choose a different username'}), 200

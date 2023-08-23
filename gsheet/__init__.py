@@ -109,15 +109,15 @@ def generate_custom_id(name, email, phone, collection_name=coll_user_activities)
     bool_exists, prev_recos = check_id(id=custom_id, collection_name=coll_user_activities)
     return custom_id, bool_exists, prev_recos
 
-def check_id_exists(id, collection_name=coll_user_activities):
+def check_id_exists(id, collection_name=coll_user_activities, variable='_id'):
 
-    sample_data = collection_name.find_one({"_id": id})
+    sample_data = collection_name.find_one({variable: id})
     if sample_data is None:
         return True
     else:
         return False
 
-def mongo_id_generator(*args, collection_name):
+def mongo_id_generator(*args, collection_name, variable='_id'):
     # Concatenate all the input arguments into a single string
     data_string = "".join(str(arg).lower().strip() for arg in args)
 
@@ -128,7 +128,7 @@ def mongo_id_generator(*args, collection_name):
     custom_id = ObjectId(sha256_hash[:24])
     
     # Assuming check_id is a function that checks if the custom_id exists in the database
-    bool_exists = check_id_exists(id=custom_id,collection_name=collection_name)
+    bool_exists = check_id_exists(id=custom_id,collection_name=collection_name, variable=variable)
     
     return custom_id, bool_exists
 
