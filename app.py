@@ -323,7 +323,7 @@ def select_modality(collection_name=coll_equipment_database):
         return jsonify({'error': f'Sorry Data not found, Something went wrong'}), 404
     
 # Select Submit Equipment Endpoint (clientwise)
-@app.route('/api/submit_equipment', methods=['POST'])
+@app.route('/api/submit_equipment', methods=['GET'])
 def submit_modality(collection_name=coll_equipment_database, methods=['POST']):
     data = request.get_json()
     try:
