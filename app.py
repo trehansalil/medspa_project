@@ -324,7 +324,7 @@ def select_modality(collection_name=coll_equipment_database):
     
 # Select Submit Equipment Endpoint (clientwise)
 @app.route('/api/submit_equipment', methods=['POST'])
-def select_modality(collection_name=coll_equipment_database, methods=['POST']):
+def submit_modality(collection_name=coll_equipment_database, methods=['POST']):
     data = request.get_json()
     try:
         unwound_equipment_list = []
