@@ -345,13 +345,13 @@ def submit_modality(collection_name=coll_client_equipment_database):
                     new_dict['equip_id'], new_dict['_is_new_equip'] = mongo_id_generator(new_dict['Company'], new_dict['Platform'], new_dict['Handpiece'],	new_dict['Modality'], collection_name=collection_name, variable='equip_id')
                     new_dict['modality_id'], new_dict['_is_new_modality'] = mongo_id_generator(new_dict['Company'], new_dict['Handpiece'],	new_dict['Modality'], collection_name=collection_name, variable='modality_id')                
                 
-                collection_name.insert_one(new_dict)
-                count_ingest += 1
+                    collection_name.insert_one(new_dict)
+                    count_ingest += 1
 
-                unwound_equipment_list.append(new_dict)
+                    unwound_equipment_list.append(new_dict)
 
         print(unwound_equipment_list)
-        return jsonify({'msg': f'Correctly Identified {count_ingest} Data points'}), 200
+        return jsonify({'msg': f'Inserted {count_ingest} Data points'}), 200
 
     except:
         return jsonify({'error': f'Sorry Data not found, Something went wrong'}), 404    
