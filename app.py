@@ -351,7 +351,7 @@ def submit_modality(collection_name=coll_client_equipment_database):
                 unwound_equipment_list.append(new_dict)
 
         print(unwound_equipment_list)
-        return jsonify({'msg': f'Correctly Identified Data'}), 200
+        return jsonify({'msg': f'Correctly Identified {count_ingest} Data points'}), 200
 
     except:
         return jsonify({'error': f'Sorry Data not found, Something went wrong'}), 404    
