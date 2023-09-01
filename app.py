@@ -324,7 +324,7 @@ def select_modality(collection_name=coll_equipment_database):
     
 # Select Submit Equipment Endpoint (clientwise)
 @app.route('/api/submit_equipment', methods=['POST'])
-def submit_modality(collection_name=coll_equipment_database):
+def submit_modality(collection_name=coll_client_equipment_database):
     data = request.get_json()
     print(data)
     try:
@@ -337,13 +337,15 @@ def submit_modality(collection_name=coll_equipment_database):
                 "Handpiece": data["handpiece"],                
                 "Modality": modality
             }
-            if coll_client_database.find_one(filter=new_dict) is None:
+            if collection_name.find_one(filter=new_dict) is None:
+
                 if (new_dict['Company']=='') & (new_dict['Platform']=='') & (new_dict['Handpiece']=='') & (new_dict['Modality']==''):
                     continue
                 else:
-                    new_dict['equip_id'], new_dict['_is_new_equip'] = mongo_id_generator(new_dict['Company'], new_dict['Platform'], new_dict['Handpiece'],	new_dict['Modality'], collection_name=coll_client_database, variable='equip_id')
-                    new_dict['modality_id'], new_dict['_is_new_modality'] = mongo_id_generator(new_dict['Company'], new_dict['Handpiece'],	new_dict['Modality'], collection_name=coll_client_database, variable='modality_id')                
-                coll_client_database.insert_one(new_dict)
+                    new_dict['equip_id'], new_dict['_is_new_equip'] = mongo_id_generator(new_dict['Company'], new_dict['Platform'], new_dict['Handpiece'],	new_dict['Modality'], collection_name=collection_name, variable='equip_id')
+                    new_dict['modality_id'], new_dict['_is_new_modality'] = mongo_id_generator(new_dict['Company'], new_dict['Handpiece'],	new_dict['Modality'], collection_name=collection_name, variable='modality_id')                
+                
+                collection_name.insert_one(new_dict)
                 count_ingest += 1
 
                 unwound_equipment_list.append(new_dict)
