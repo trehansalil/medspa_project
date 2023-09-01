@@ -337,21 +337,11 @@ def submit_modality(collection_name=coll_equipment_database):
                 "handpiece": data["handpiece"],                
                 "modality": modality
             }
-            coll_client_database.find_one(filter=new_dict)
+            print(coll_client_database.find_one(filter=new_dict))
             unwound_equipment_list.append(new_dict)
 
         print(unwound_equipment_list)
 
-
-        # Find the machinery document with the specified machinery type and plant name in the database
-        modality = collection_name.distinct("Modality", {'Company': company_name, "Platform": platform, "Handpiece": handpiece})
-        if modality != []:
-            # If the machinery document is found, return a success message as a JSON response
-            return jsonify({'message': f'Successfully selected modality for company: {company_name}, platform: {platform} & handpiece: {handpiece}.', 'modality': modality})
-        else:
-            # If the machinery document is not found, return an error message as a JSON response with a 404 status code
-            # return jsonify({'error': f'Modality selection unsuccessful for company: {company_name}, platform: {platform} & handpiece: {handpiece}.'}), 404
-            return jsonify({'error': f'Sorry Data not found, Something went wrong'}), 404
     except:
         return jsonify({'error': f'Sorry Data not found, Something went wrong'}), 404    
 
