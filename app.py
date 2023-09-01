@@ -329,16 +329,24 @@ def submit_modality(collection_name=coll_equipment_database):
     print(data)
     try:
         unwound_equipment_list = []
-
+        count_ingest = 0
         for modality in data["modality"]:
             new_dict = {
-                "company_name": data["company_name"],
-                "platform": data["platform"],
-                "handpiece": data["handpiece"],                
-                "modality": modality
+                "Company": data["company_name"],
+                "Platform": data["platform"],
+                "Handpiece": data["handpiece"],                
+                "Modality": modality
             }
-            print(coll_client_database.find_one(filter=new_dict))
-            unwound_equipment_list.append(new_dict)
+            if coll_client_database.find_one(filter=new_dict) is None:
+                if (new_dict['Company']=='') & (new_dict['Platform']=='') & (new_dict['Handpiece']=='') & (new_dict['Modality']==''):
+                    continue
+                else:
+                    new_dict['equip_id'], new_dict['_is_new_equip'] = mongo_id_generator(new_dict['Company'], new_dict['Platform'], new_dict['Handpiece'],	new_dict['Modality'], collection_name=coll_client_database, variable='equip_id')
+                    new_dict['modality_id'], new_dict['_is_new_modality'] = mongo_id_generator(new_dict['Company'], new_dict['Handpiece'],	new_dict['Modality'], collection_name=coll_client_database, variable='modality_id')                
+                coll_client_database.insert_one(new_dict)
+                count_ingest += 1
+
+                unwound_equipment_list.append(new_dict)
 
         print(unwound_equipment_list)
         return jsonify({'msg': f'Correctly Identified Data'}), 200
