@@ -335,7 +335,9 @@ def submit_modality(collection_name=coll_client_equipment_database):
                 "Company": data["company_name"],
                 "Platform": data["platform"],
                 "Handpiece": data["handpiece"],                
-                "Modality": modality
+                "Modality": modality,
+                "created_on": datetime.now(),
+                "updated_on": datetime.now()
             }
             if collection_name.find_one(filter=new_dict) is None:
 
