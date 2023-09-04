@@ -185,9 +185,21 @@ def do_registration(collection_name=coll_client_database):
         username = request.args.get('username')
         email = request.args.get('email')
         password = request.args.get('password')  
-        
+
+        # Check if the username already exists in the database
+        existing_username_user = coll_client_database.find_one({'username': username})
+
+        # Check if the username already exists in the database
+        existing_email_user = coll_client_database.find_one({'email': email})        
+
         if (first_name is None) | (last_name is None) | (username is None) | (email is None) | (password is None):
-            return jsonify({'error': f'Sorry some error has occured please try again later'}), 404
+            return jsonify({'message': f'Sorry some error has occured please try again later'}), 404
+
+        elif existing_username_user:
+            return jsonify({'message': 'Username already exists'}), 400
+        
+        elif existing_email_user:
+            return jsonify({'message': 'Email id already exists'}), 400            
         
         record['first_name'] = first_name
         record['last_name'] = last_name
@@ -195,27 +207,25 @@ def do_registration(collection_name=coll_client_database):
         record['email'] = email
         record['password'] = password
         record['_id'], record['_is_new'] = mongo_id_generator(email, collection_name=collection_name, variable='_id')   
+        record['created_on'] = datetime.now()
+        record['updated_on'] = record['created_on']
 
         # _is_new_checker(id=username, collection_name=coll_user_activities, variable='username')
-        record['_is_username_new'] = _is_new_checker(id=username, collection_name=collection_name, variable='username')   
+        # record['_is_username_new'] = _is_new_checker(id=username, collection_name=collection_name, variable='username')   
         
         print("\n")
         
         print(record)
-        
-        print("\n")
-        if not record['_is_username_new']:
-            # collection_name.insert_one(record)
-            return jsonify({'message': 'Username Taken. Please choose a different username'}), 200
-        elif (record['_is_new']) & (record['_is_username_new']):
+
+        if (record['_is_new']):
             collection_name.insert_one(record)
             return jsonify({'message': 'Registration Successful'}), 200        
         else:
-            return jsonify({'message': 'User already exists'}), 200
+            return jsonify({'message': f'Sorry some error has occured please try again later'}), 404
         # Return the company names as a JSON response
         
     except:
-        return jsonify({'error': f'Sorry some error has occured please try again later'}), 404
+        return jsonify({'message': f'Sorry some error has occured please try again later'}), 404
     
 # Registration Endpoint
 @app.route('/api/login', methods=['POST'])
