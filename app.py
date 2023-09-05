@@ -219,7 +219,8 @@ def do_registration(collection_name=coll_client_database):
             return jsonify({'message': f'Sorry some error has occured please try again later'}), 404
         # Return the company names as a JSON response
         
-    except:
+    except Exception as e:
+        print(e)
         return jsonify({'message': f'Sorry some error has occured please try again later'}), 404
     
 # Registration Endpoint
@@ -244,7 +245,8 @@ def do_login(collection_name=coll_client_database):
 
         record_content = collection_name.find_one(filter=record)
         print(f"Second error: {record['username']}")
-        print(record_content)
+        # print(record_content)
+        record_content['_id'] = str(record_content['_id'])
 
         if "_id" not in record_content:
             return jsonify({'message': "User doesn't exists"}), 404
