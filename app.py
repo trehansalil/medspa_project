@@ -235,7 +235,7 @@ def do_login(collection_name=coll_client_database):
         # password = request.args.get('password')  
         
         if (record['username'] is None) | (record['password'] is None):
-            print(record['username'])
+            print(f"First error: {record['username']}")
             return jsonify({'error': f'Sorry some error has occured please try again later'}), 404
         
 
@@ -243,7 +243,7 @@ def do_login(collection_name=coll_client_database):
         # record['password'] = password
 
         record_content = collection_name.find_one(filter=record)
-        print(record['username'])
+        print(f"Second error: {record['username']}")
 
         if record_content is None:
             return jsonify({'message': "User doesn't exists"}), 404
