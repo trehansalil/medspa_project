@@ -103,19 +103,6 @@ def submit_form():
                     "Melasma": 'Melasma'
                 }
     for record in coll_procedure_risk.find({}, {"_id":0, "created_on": 0, "updated_on": 0, "release": 0, "version": 0}):
-        # jai_record = {}
-        # jai_record['procedure'] = record['Modality']
-        # jai_record['pih_risk'] = record['PIH Risk (0-110)']
-        # jai_record['pih_procedure_risk'] = record['PIH Risk (0-110)'] + client_score
-        # jai_record['Frekles'] = record['Frekles (0-100)'] if jai_record['pih_procedure_risk']<=120 else 0
-        # jai_record['LHR'] = 0 if data['sun_protection']=='No' else (record['LHR (0-100)'] if jai_record['pih_procedure_risk']<=120 else 0)
-        # jai_record['cit_of_procedure'] = record['CIT Degree (15-100)'] if jai_record['pih_procedure_risk']<=120 else 0
-        # if (hq == 25) & (retinol_adequate==15) & (sun_protection == 15):
-        #     jai_record['Melasma'] = record['Melasma (0-75)'] if jai_record['pih_procedure_risk']<=120 else 0
-        # else:
-        #     jai_record['Melasma'] = False
-
-        # print(record)
 
         record = {i: record[i] if str(record[i]).strip() != '' else 0 for i in record}
 
@@ -181,7 +168,7 @@ def submit_form():
 
 # Registration Endpoint
 @app.route('/api/clinic_registration', methods=['POST'])
-def do_registration(collection_name=coll_client_database):
+def do_registration(collection_name=coll_clinic_database):
     record = request.get_json()
     record['employee_type'] = "O"
     print(record)
@@ -190,10 +177,10 @@ def do_registration(collection_name=coll_client_database):
         record = {i: record[i].strip() if type(record[i]) == str else record[i] for i in record}
 
         # Check if the username already exists in the database
-        existing_username_user = coll_client_database.find_one({'username': record['username']})
+        existing_username_user = collection_name.find_one({'username': record['username']})
 
         # Check if the username already exists in the database
-        existing_email_user = coll_client_database.find_one({'email': record['email']})        
+        existing_email_user = collection_name.find_one({'email': record['email']})        
 
         if (record['first_name'] in [None, ""]) | (record['last_name'] in [None, ""]) | (record['username'] in [None, ""]) | (record['email'] in [None, ""]) | (record['password'] in [None, ""]):
             return jsonify({'error': f'Sorry some error has occured please try again later'}), 404
@@ -229,7 +216,7 @@ def do_registration(collection_name=coll_client_database):
     
 # Registration Endpoint
 @app.route('/api/login', methods=['POST'])
-def do_login(collection_name=coll_client_database):
+def do_login(collection_name=coll_clinic_database):
     record = request.get_json()
     print(record)
     try:
@@ -250,7 +237,7 @@ def do_login(collection_name=coll_client_database):
         if record_content is None:
             return jsonify({'error': "User doesn't exists"}), 404
         else:
-            record_content['client_id'] = str(record_content.pop('_id'))
+            record_content['clinic_id'] = str(record_content.pop('_id'))
             return jsonify({'success': 'User exists', "content": record_content}), 200
             # Return the company names as a JSON response
         
@@ -336,7 +323,7 @@ def select_modality(collection_name=coll_equipment_database):
     
 # Select Submit Equipment Endpoint (clientwise)
 @app.route('/api/submit_equipment', methods=['POST'])
-def submit_modality(collection_name=coll_client_equipment_database):
+def submit_modality(collection_name=coll_clinic_equipment_database):
     data = request.get_json()
     print(data)
     try:
@@ -344,7 +331,7 @@ def submit_modality(collection_name=coll_client_equipment_database):
         count_ingest = 0
         for modality in data["modality"]:
             new_dict = {
-                "client_id": ObjectId(data['client_id']),
+                "clinic_id": ObjectId(data['clinic_id']),
                 "Company": data["company_name"],
                 "Platform": data["platform"],
                 "Handpiece": data["handpiece"],                
@@ -358,12 +345,13 @@ def submit_modality(collection_name=coll_client_equipment_database):
                     continue
                 else:
                     new_dict['equip_id'], new_dict['_is_new_equip'] = mongo_id_generator(new_dict['Company'], new_dict['Platform'], new_dict['Handpiece'],	new_dict['Modality'], collection_name=collection_name, variable='equip_id')
-                    new_dict['modality_id'], new_dict['_is_new_modality'] = mongo_id_generator(new_dict['Company'], new_dict['Handpiece'],	new_dict['Modality'], collection_name=collection_name, variable='modality_id')                
-                
-                    collection_name.insert_one(new_dict)
-                    count_ingest += 1
+                    new_dict['modality_id'], new_dict['_is_new_modality'] = mongo_id_generator(new_dict['Company'], new_dict['Handpiece'],	new_dict['Modality'], collection_name=collection_name, variable='modality_id')
+                    new_dict['_id'], new_dict['_is_new_id'] = mongo_id_generator(new_dict['clinic_id'], new_dict['Company'], new_dict['Platform'], new_dict['Handpiece'],	new_dict['Modality'], collection_name=collection_name, variable='_id')                
+                    if new_dict['_is_new_id']:
+                        collection_name.insert_one(new_dict)
+                        count_ingest += 1
 
-                    unwound_equipment_list.append(new_dict)
+                        unwound_equipment_list.append(new_dict)
 
         print(unwound_equipment_list)
         return jsonify({'success': f'Inserted {count_ingest} Data points'}), 200
