@@ -246,11 +246,12 @@ def do_login(collection_name=coll_client_database):
         record_content = collection_name.find_one(filter=record)
         print(f"Second error: {record['username']}")
         # print(record_content)
-        record_content['_id'] = str(record_content['_id'])
+       
 
         if "_id" not in record_content:
             return jsonify({'message': "User doesn't exists"}), 404
         else:
+            record_content['_id'] = str(record_content['_id'])
             return jsonify({'message': 'User exists', "content": record_content}), 200
             # Return the company names as a JSON response
         
