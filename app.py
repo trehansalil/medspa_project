@@ -93,13 +93,15 @@ def submit_form():
     
     json_data = []
     # if data['key'] == "Procedure" key = "procedure" elif data['key'] == 'PIH Risk' key = "pih_risk" elif data['key'] == 'PIH & Procedure Risk' key = "pih_procedure_risk" else 
-    key_dict = {"Procedure": 'procedure',
-                "PIH Risk": 'pih_risk',
-                "PIH & Procedure Risk": 'pih_procedure_risk',
-                "Frekles": 'Frekles',
-                "LHR": 'LHR',
-                "CIT of Procedure": 'cit_of_procedure',
-                "Melasma": 'Melasma'}
+    key_dict = {
+                    "Procedure": 'procedure',
+                    "pih_risk": 'pih_risk',
+                    "pih_procedure_risk": 'pih_procedure_risk',
+                    "Frekles": 'Frekles',
+                    "LHR": 'LHR',
+                    "CIT of Procedure": 'cit_of_procedure',
+                    "Melasma": 'Melasma'
+                }
     for record in coll_procedure_risk.find({}, {"_id":0, "created_on": 0, "updated_on": 0, "release": 0, "version": 0}):
         # jai_record = {}
         # jai_record['procedure'] = record['Modality']
