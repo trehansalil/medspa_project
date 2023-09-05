@@ -178,21 +178,18 @@ def submit_form():
 # Registration Endpoint
 @app.route('/api/registration', methods=['POST'])
 def do_registration(collection_name=coll_client_database):
-    record = {}
+    record = request.get_json()
+    
     try:
-        first_name = request.args.get('first_name').strip()
-        last_name = request.args.get('last_name').strip()
-        username = request.args.get('username').strip()
-        email = request.args.get('email').strip()
-        password = request.args.get('password').strip()
+        record = {i: record[i].strip() for i in record}
 
         # Check if the username already exists in the database
-        existing_username_user = coll_client_database.find_one({'username': username})
+        existing_username_user = coll_client_database.find_one({'username': record['username']})
 
         # Check if the username already exists in the database
-        existing_email_user = coll_client_database.find_one({'email': email})        
+        existing_email_user = coll_client_database.find_one({'email': record['email']})        
 
-        if (first_name in [None, ""]) | (last_name in [None, ""]) | (username in [None, ""]) | (email in [None, ""]) | (password in [None, ""]):
+        if (record['first_name'] in [None, ""]) | (record['last_name'] in [None, ""]) | (record['username'] in [None, ""]) | (record['email'] in [None, ""]) | (record['password'] in [None, ""]):
             return jsonify({'message': f'Sorry some error has occured please try again later'}), 404
 
         elif existing_username_user:
@@ -201,12 +198,8 @@ def do_registration(collection_name=coll_client_database):
         elif existing_email_user:
             return jsonify({'message': 'Email id already exists'}), 400            
         
-        record['first_name'] = first_name
-        record['last_name'] = last_name
-        record['username'] = username
-        record['email'] = email
-        record['password'] = password
-        record['_id'], record['_is_new'] = mongo_id_generator(email, collection_name=collection_name, variable='_id')   
+
+        record['_id'], record['_is_new'] = mongo_id_generator(record['email'], collection_name=collection_name, variable='_id')   
         record['created_on'] = datetime.now()
         record['updated_on'] = record['created_on']
 
