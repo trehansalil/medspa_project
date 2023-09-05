@@ -183,7 +183,7 @@ def do_registration(collection_name=coll_client_database):
     print(record)
     
     try:
-        record = {i: record[i].strip() for i in record}
+        record = {i: record[i].strip() if type(record[i]) == str else record[i] for i in record}
 
         # Check if the username already exists in the database
         existing_username_user = coll_client_database.find_one({'username': record['username']})
@@ -229,14 +229,9 @@ def do_login(collection_name=coll_client_database):
     record = request.get_json()
     print(record)
     try:
-        # first_name = request.args.get('first_name')
-        # last_name = request.args.get('last_name')
-        # username = request.args.get('username')
-        # email = request.args.get('email')
-        # password = request.args.get('password')  
         
         if (record['username'] is None) | (record['password'] is None):
-            print(f"First error: {record['username']}")
+            # print(f"First error: {record['username']}")
             return jsonify({'error': f'Sorry some error has occured please try again later'}), 404
         
 
@@ -244,7 +239,7 @@ def do_login(collection_name=coll_client_database):
         # record['password'] = password
 
         record_content = collection_name.find_one(filter=record)
-        print(f"Second error: {record['username']}")
+        # print(f"Second error: {record['username']}")
         # print(record_content)
        
 
