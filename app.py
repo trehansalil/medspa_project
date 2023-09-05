@@ -344,7 +344,7 @@ def submit_modality(collection_name=coll_client_equipment_database):
         count_ingest = 0
         for modality in data["modality"]:
             new_dict = {
-                "client_id": data['client_id'],
+                "client_id": ObjectId(data['client_id']),
                 "Company": data["company_name"],
                 "Platform": data["platform"],
                 "Handpiece": data["handpiece"],                
