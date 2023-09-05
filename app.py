@@ -244,7 +244,8 @@ def do_login(collection_name=coll_client_database):
 
         record_content = collection_name.find_one(filter=record)
         print(f"Second error: {record['username']}")
-
+        print(record_content)
+        
         if record_content is None:
             return jsonify({'message': "User doesn't exists"}), 404
         else:
