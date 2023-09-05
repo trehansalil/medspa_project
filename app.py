@@ -94,11 +94,11 @@ def submit_form():
     json_data = []
     # if data['key'] == "Procedure" key = "procedure" elif data['key'] == 'PIH Risk' key = "pih_risk" elif data['key'] == 'PIH & Procedure Risk' key = "pih_procedure_risk" else 
     key_dict = {
-                    "Procedure": 'procedure',
+                    "procedure": 'procedure',
                     "pih_risk": 'pih_risk',
                     "pih_procedure_risk": 'pih_procedure_risk',
-                    "Frekles": 'Frekles',
-                    "LHR": 'LHR',
+                    "frekles": 'frekles',
+                    "lhr": 'lhr',
                     "CIT of Procedure": 'cit_of_procedure',
                     "Melasma": 'Melasma'
                 }
@@ -147,8 +147,8 @@ def submit_form():
     jai_data = pd.DataFrame.from_dict(json_data)
     jai_data.columns = [i.lower().strip().replace(" ", "_") for i in jai_data.columns]
     print(jai_data.columns)
-    jai_data = jai_data.loc[jai_data[key_dict[data['key']]] != False, :]
-    json_data = jai_data.sort_values(by=[key_dict[data['key']]]).to_dict(orient='records')
+    jai_data = jai_data.loc[jai_data[data['key']] != False, :]
+    json_data = jai_data.sort_values(by=[data['key']]).to_dict(orient='records')
 
     inputs = {}   
     print(data)
