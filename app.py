@@ -354,7 +354,11 @@ def submit_modality(collection_name=coll_clinic_equipment_database):
                         unwound_equipment_list.append(new_dict)
 
         print(unwound_equipment_list)
-        return jsonify({'success': f'Inserted {count_ingest} Data points'}), 200
+        if count_ingest == 0:
+            return jsonify({'error': f'Duplicate records'}), 200
+        else:
+            pre_existing_record_count = len(data["modality"])-count_ingest
+            return jsonify({'success': f'Inserted {count_ingest} Data points', "pre_existing_record_count": pre_existing_record_count}), 200
 
     except:
         return jsonify({'error': f'Sorry Data not found, Something went wrong'}), 404    
