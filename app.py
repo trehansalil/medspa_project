@@ -177,9 +177,10 @@ def submit_form():
     return jsonify({'client-score': f"{client_score}", 'data': json_data})
 
 # Registration Endpoint
-@app.route('/api/registration', methods=['POST'])
+@app.route('/api/clinic_registration', methods=['POST'])
 def do_registration(collection_name=coll_client_database):
     record = request.get_json()
+    record['employee_type'] = "O"
     print(record)
     
     try:
