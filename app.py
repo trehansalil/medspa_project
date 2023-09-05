@@ -28,7 +28,7 @@ def add_numbers():
     z = x + y
     return jsonify({'result': z})
 
-@app.route('/run_script', methods=['POST'])
+@app.route('/api/run_script', methods=['POST'])
 def run_script():
     action = request.form['action']
     param2 = request.form['admin_comments']
@@ -50,7 +50,7 @@ def run_script():
 def patient_page():
     return render_template('patient_details4.html')
 
-@app.route('/submit', methods=['POST'])
+@app.route('/api/submit', methods=['POST'])
 def submit_form():
     data = request.get_json()
     # Process the form data as needed
