@@ -145,6 +145,7 @@ def submit_form():
         json_data.append(jai_record)
     import pandas as pd
     jai_data = pd.DataFrame.from_dict(json_data)
+    jai_data.columns = [i.lower().strip().replace(" ", "_") for i in jai_data.columns]
     print(jai_data.columns)
     jai_data = jai_data.loc[jai_data[key_dict[data['key']]] != False, :]
     json_data = jai_data.sort_values(by=[key_dict[data['key']]]).to_dict(orient='records')
