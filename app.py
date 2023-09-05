@@ -179,6 +179,7 @@ def submit_form():
 @app.route('/api/registration', methods=['POST'])
 def do_registration(collection_name=coll_client_database):
     record = request.get_json()
+    print(record)
     
     try:
         record = {i: record[i].strip() for i in record}
