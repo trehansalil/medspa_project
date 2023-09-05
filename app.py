@@ -248,7 +248,7 @@ def do_login(collection_name=coll_client_database):
         # print(record_content)
        
 
-        if "_id" not in record_content:
+        if record_content is None:
             return jsonify({'message': "User doesn't exists"}), 404
         else:
             record_content['_id'] = str(record_content['_id'])
