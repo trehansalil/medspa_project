@@ -250,9 +250,10 @@ def do_login(collection_name=coll_client_database):
             return jsonify({'message': "User doesn't exists"}), 404
         else:
             return jsonify({'message': 'User exists', "content": record_content}), 200
-        # Return the company names as a JSON response
+            # Return the company names as a JSON response
         
-    except:
+    except Exception as e:
+        print(e)
         return jsonify({'error': f'Sorry some error has occured please try again later'}), 404    
 
 # Company Names Endpoint
