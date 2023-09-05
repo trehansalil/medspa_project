@@ -196,13 +196,13 @@ def do_registration(collection_name=coll_client_database):
         existing_email_user = coll_client_database.find_one({'email': record['email']})        
 
         if (record['first_name'] in [None, ""]) | (record['last_name'] in [None, ""]) | (record['username'] in [None, ""]) | (record['email'] in [None, ""]) | (record['password'] in [None, ""]):
-            return jsonify({'message': f'Sorry some error has occured please try again later'}), 404
+            return jsonify({'error': f'Sorry some error has occured please try again later'}), 404
 
         elif existing_username_user:
-            return jsonify({'message': 'Username already exists'}), 400
+            return jsonify({'error': 'Username already exists'}), 400
         
         elif existing_email_user:
-            return jsonify({'message': 'Email id already exists'}), 400            
+            return jsonify({'error': 'Email id already exists'}), 400            
         
 
         record['_id'], record['_is_new'] = mongo_id_generator(record['email'], collection_name=collection_name, variable='_id')   
@@ -218,14 +218,14 @@ def do_registration(collection_name=coll_client_database):
 
         if (record['_is_new']):
             collection_name.insert_one(record)
-            return jsonify({'message': 'Registration Successful'}), 200        
+            return jsonify({'success': 'Registration Successful'}), 200        
         else:
-            return jsonify({'message': f'Sorry some error has occured please try again later'}), 404
+            return jsonify({'error': f'Sorry some error has occured please try again later'}), 404
         # Return the company names as a JSON response
         
     except Exception as e:
         print(e)
-        return jsonify({'message': f'Sorry some error has occured please try again later'}), 404
+        return jsonify({'error': f'Sorry some error has occured please try again later'}), 404
     
 # Registration Endpoint
 @app.route('/api/login', methods=['POST'])
@@ -234,7 +234,7 @@ def do_login(collection_name=coll_client_database):
     print(record)
     try:
         
-        if (record['username'] is None) | (record['password'] is None):
+        if (record['username'] in [None, ""]) | (record['password'] in [None, ""]):
             # print(f"First error: {record['username']}")
             return jsonify({'error': f'Sorry some error has occured please try again later'}), 404
         
@@ -248,10 +248,10 @@ def do_login(collection_name=coll_client_database):
        
 
         if record_content is None:
-            return jsonify({'message': "User doesn't exists"}), 404
+            return jsonify({'error': "User doesn't exists"}), 404
         else:
-            record_content['_id'] = str(record_content['_id'])
-            return jsonify({'message': 'User exists', "content": record_content}), 200
+            record_content['client_id'] = str(record_content.pop('_id'))
+            return jsonify({'success': 'User exists', "content": record_content}), 200
             # Return the company names as a JSON response
         
     except Exception as e:
@@ -284,7 +284,7 @@ def select_platform(collection_name=coll_equipment_database):
         print(company_name)
         if platform != []:
             # If the machinery document is found, return a success message as a JSON response
-            return jsonify({'message': f'Successfully identified list of platforms for company: {company_name}.', 'platform': platform})
+            return jsonify({'success': f'Successfully identified list of platforms for company: {company_name}.', 'platform': platform})
         else:
             # If the machinery document is not found, return an error message as a JSON response with a 404 status code
             # return jsonify({'error': f'Platform not found for company: {company_name}.'}), 404 
@@ -306,7 +306,7 @@ def select_handpiece(collection_name=coll_equipment_database):
         handpiece = collection_name.distinct("Handpiece", {'Company': company_name, "Platform": platform})
         if handpiece != []:
             # If the machinery document is found, return a success message as a JSON response
-            return jsonify({'message': f'Successfully identified list of handpieces for company: {company_name}, platform: {platform}.', 'handpiece': handpiece})
+            return jsonify({'success': f'Successfully identified list of handpieces for company: {company_name}, platform: {platform}.', 'handpiece': handpiece})
         else:
             # If the machinery document is not found, return an error message as a JSON response with a 404 status code
             # return jsonify({'error': f'Handpiece not found for company: {company_name}, platform: {platform}.'}), 404  
@@ -326,7 +326,7 @@ def select_modality(collection_name=coll_equipment_database):
         modality = collection_name.distinct("Modality", {'Company': company_name, "Platform": platform, "Handpiece": handpiece})
         if modality != []:
             # If the machinery document is found, return a success message as a JSON response
-            return jsonify({'message': f'Successfully selected modality for company: {company_name}, platform: {platform} & handpiece: {handpiece}.', 'modality': modality})
+            return jsonify({'success': f'Successfully selected modality for company: {company_name}, platform: {platform} & handpiece: {handpiece}.', 'modality': modality})
         else:
             # If the machinery document is not found, return an error message as a JSON response with a 404 status code
             # return jsonify({'error': f'Modality selection unsuccessful for company: {company_name}, platform: {platform} & handpiece: {handpiece}.'}), 404
@@ -365,7 +365,7 @@ def submit_modality(collection_name=coll_client_equipment_database):
                     unwound_equipment_list.append(new_dict)
 
         print(unwound_equipment_list)
-        return jsonify({'msg': f'Inserted {count_ingest} Data points'}), 200
+        return jsonify({'success': f'Inserted {count_ingest} Data points'}), 200
 
     except:
         return jsonify({'error': f'Sorry Data not found, Something went wrong'}), 404    
