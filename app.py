@@ -344,6 +344,7 @@ def submit_modality(collection_name=coll_client_equipment_database):
         count_ingest = 0
         for modality in data["modality"]:
             new_dict = {
+                "client_id": data['client_id'],
                 "Company": data["company_name"],
                 "Platform": data["platform"],
                 "Handpiece": data["handpiece"],                
@@ -356,8 +357,8 @@ def submit_modality(collection_name=coll_client_equipment_database):
                 if (new_dict['Company']=='') & (new_dict['Platform']=='') & (new_dict['Handpiece']=='') & (new_dict['Modality']==''):
                     continue
                 else:
-                    new_dict['equip_id'], new_dict['_is_new_equip'] = mongo_id_generator(new_dict['Company'], new_dict['Platform'], new_dict['Handpiece'],	new_dict['Modality'], collection_name=collection_name, variable='equip_id')
-                    new_dict['modality_id'], new_dict['_is_new_modality'] = mongo_id_generator(new_dict['Company'], new_dict['Handpiece'],	new_dict['Modality'], collection_name=collection_name, variable='modality_id')                
+                    new_dict['equip_id'], new_dict['_is_new_equip'] = mongo_id_generator(new_dict['client_id'], new_dict['Company'], new_dict['Platform'], new_dict['Handpiece'],	new_dict['Modality'], collection_name=collection_name, variable='equip_id')
+                    new_dict['modality_id'], new_dict['_is_new_modality'] = mongo_id_generator(new_dict['client_id'], new_dict['Company'], new_dict['Handpiece'],	new_dict['Modality'], collection_name=collection_name, variable='modality_id')                
                 
                     collection_name.insert_one(new_dict)
                     count_ingest += 1
