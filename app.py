@@ -143,6 +143,7 @@ def submit_form():
         json_data.append(jai_record)
     import pandas as pd
     jai_data = pd.DataFrame.from_dict(json_data)
+    print(jai_data.columns)
     jai_data = jai_data.loc[jai_data[key_dict[data['key']]] != False, :]
     json_data = jai_data.sort_values(by=[key_dict[data['key']]]).to_dict(orient='records')
 
@@ -224,20 +225,21 @@ def do_registration(collection_name=coll_client_database):
 # Registration Endpoint
 @app.route('/api/login', methods=['POST'])
 def do_login(collection_name=coll_client_database):
-    record = {}
+    record = request.get_json()
+    print(record)
     try:
         # first_name = request.args.get('first_name')
         # last_name = request.args.get('last_name')
-        username = request.args.get('username')
+        # username = request.args.get('username')
         # email = request.args.get('email')
-        password = request.args.get('password')  
+        # password = request.args.get('password')  
         
-        if (username is None) | (password is None):
+        if (record['username'] is None) | (record['password'] is None):
             return jsonify({'error': f'Sorry some error has occured please try again later'}), 404
         
 
-        record['username'] = username
-        record['password'] = password
+        # record['username'] = username
+        # record['password'] = password
 
         record_content = collection_name.find_one(record)
 
