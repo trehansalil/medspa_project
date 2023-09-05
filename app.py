@@ -180,11 +180,11 @@ def submit_form():
 def do_registration(collection_name=coll_client_database):
     record = {}
     try:
-        first_name = request.args.get('first_name')
-        last_name = request.args.get('last_name')
-        username = request.args.get('username')
-        email = request.args.get('email')
-        password = request.args.get('password')  
+        first_name = request.args.get('first_name').strip()
+        last_name = request.args.get('last_name').strip()
+        username = request.args.get('username').strip()
+        email = request.args.get('email').strip()
+        password = request.args.get('password').strip()
 
         # Check if the username already exists in the database
         existing_username_user = coll_client_database.find_one({'username': username})
@@ -192,7 +192,7 @@ def do_registration(collection_name=coll_client_database):
         # Check if the username already exists in the database
         existing_email_user = coll_client_database.find_one({'email': email})        
 
-        if (first_name is None) | (last_name is None) | (username is None) | (email is None) | (password is None):
+        if (first_name in [None, ""]) | (last_name in [None, ""]) | (username in [None, ""]) | (email in [None, ""]) | (password in [None, ""]):
             return jsonify({'message': f'Sorry some error has occured please try again later'}), 404
 
         elif existing_username_user:
