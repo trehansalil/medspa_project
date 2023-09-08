@@ -361,6 +361,27 @@ def submit_modality(collection_name=coll_clinic_equipment_database):
             return jsonify({'success': f'Inserted {count_ingest} Data points', "pre_existing_record_count": pre_existing_record_count}), 200
 
     except:
+        return jsonify({'error': f'Sorry Data not found, Something went wrong'}), 404
+
+# Select Submit Equipment Endpoint (clientwise)
+@app.route('/api/get_equipment', methods=['GET'])
+def get_equipment(collection_name=coll_clinic_equipment_database):
+
+    try:
+        clinic_id = ObjectId(request.args.get('clinic_id'))
+        print(clinic_id)
+        filter = {"clinic_id": clinic_id}
+        projection = {"_id": 0, "Company": 1, "Platform": 1, "Handpiece": 1, "Modality": 1}
+
+        if collection_name.find_one(filter=filter) is None:
+            return jsonify({'error': f'No records for clinic_id: {str(clinic_id)}'}), 404
+        else:
+            print(collection_name.find_one(filter=filter, projection=projection))
+            equipment_list = list(collection_name.find(filter=filter, projection=projection))
+            return jsonify({'success': f'Fetched {len(equipment_list)} equipments for clinic_id: {str(clinic_id)}', "content": equipment_list}), 200
+
+    except:
+
         return jsonify({'error': f'Sorry Data not found, Something went wrong'}), 404    
 
 if __name__ == '__main__':
