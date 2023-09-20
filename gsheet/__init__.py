@@ -49,6 +49,13 @@ db_backup = client[mongo_db_backup_name]
 db_user_activities = client[mongo_db_user_activity_name]
 coll_equipment_database = db[mongo_db_coll_equipment_database]
 
+coll_procedure_risk = db[mongo_db_coll_procedure_risk]
+
+coll_sun_sensitivity = db[mongo_db_coll_sun_sensitivity]
+coll_hq = db[mongo_db_coll_hq]
+coll_retinol = db[mongo_db_coll_retinol]
+coll_sun_protection = db[mongo_db_coll_sun_protection]
+
 coll_release_table = db[mongo_coll_release_table]
 coll_release_table_backup = db_backup[mongo_coll_release_table]
 
