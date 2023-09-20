@@ -383,7 +383,7 @@ def get_equipment(collection_name=coll_clinic_equipment_database):
         clinic_id = ObjectId(request.args.get('clinic_id'))
         print(clinic_id)
         filter = {"clinic_id": clinic_id}
-        projection = {"_id": 0, "Company": 1, "Platform": 1, "Handpiece": 1, "Modality": 1}
+        projection = {"_id": 0, "Company": 1, "Platform": 1, "Handpiece": 1, "Modality": 1, "equip_id": 1}
 
         if collection_name.find_one(filter=filter) is None:
             return jsonify({'error': f'No records for clinic_id: {str(clinic_id)}'}), 404
