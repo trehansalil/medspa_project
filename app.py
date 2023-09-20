@@ -105,8 +105,6 @@ def submit_form(collection_name=coll_clinic_equipment_database, source_collectio
     modality_list = collection_name.distinct("modality_id", {"clinic_id": ObjectId(clinic_id)})
 
     del data['clinic_id']
-
-    print(modality_list)
     
 
     filter={
@@ -114,8 +112,6 @@ def submit_form(collection_name=coll_clinic_equipment_database, source_collectio
             '$in': modality_list
         }
     }
-
-    print(list(source_collection_name.find(filter=filter, projection={"_id":0, "created_on": 0, "updated_on": 0, "release": 0, "version": 0})))
 
     for record in source_collection_name.find(filter=filter, projection={"_id":0, "created_on": 0, "updated_on": 0, "release": 0, "version": 0}):
 
@@ -147,7 +143,6 @@ def submit_form(collection_name=coll_clinic_equipment_database, source_collectio
         json_data.append(jai_record)
         print(jai_record)
     import pandas as pd
-    print(len(json_data))
     jai_data = pd.DataFrame.from_dict(json_data)
     jai_data.columns = [i.lower().strip().replace(" ", "_") for i in jai_data.columns]
     print(jai_data.columns)
