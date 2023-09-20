@@ -395,6 +395,30 @@ def get_equipment(collection_name=coll_clinic_equipment_database):
     except:
 
         return jsonify({'error': f'Sorry Data not found, Something went wrong'}), 404    
+    
+# Select Delete Equipment Endpoint (clientwise)
+@app.route('/api/delete_equipment', methods=['POST'])
+def delete_equipment(collection_name=coll_clinic_equipment_database):
+    data = request.get_json()
+    try:
+        clinic_id = ObjectId(data['clinic_id'])
+        equip_id = ObjectId(data['equip_id'])
+        # equip_id, _ = mongo_id_generator(data['Company'], data['Platform'], data['Handpiece'],	data['Modality'], collection_name=collection_name, variable='equip_id')
+        
+        filter = {"clinic_id": clinic_id, "equip_id": equip_id}
+        # projection = {"_id": 0, "Company": 1, "Platform": 1, "Handpiece": 1, "Modality": 1}
+
+        if collection_name.find_one(filter=filter) is None:
+            return jsonify({'error': f'No records for clinic_id: {str(clinic_id)}, equip_id: {str(equip_id)}'}), 404
+        else:
+            print(collection_name.find_one(filter=filter))
+            a = collection_name.delete_one(filter=filter)
+            print(a)
+            return jsonify({'success': f'Deleted equip_id: {str(equip_id)} for clinic_id: {str(clinic_id)}'}), 200
+
+    except:
+
+        return jsonify({'error': f'Sorry unable to delete data, Something went wrong'}), 404    
 
 if __name__ == '__main__':
     app.secret_key = 'A1Zr98j/3yX R~XHH!jmN]LWX/,?RT'
