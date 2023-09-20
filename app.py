@@ -11,11 +11,7 @@ app = Flask(__name__, static_folder=os.path.join(os.getcwd(), 'static'))
 # Requires the PyMongo package.
 # https://api.mongodb.com/python/current
 
-coll_procedure_risk = db[mongo_db_coll_procedure_risk]
-coll_sun_sensitivity = db[mongo_db_coll_sun_sensitivity]
-coll_hq = db[mongo_db_coll_hq]
-coll_retinol = db[mongo_db_coll_retinol]
-coll_sun_protection = db[mongo_db_coll_sun_protection]
+
 
 @app.route('/')
 def index():
@@ -51,8 +47,9 @@ def patient_page():
     return render_template('patient_details4.html')
 
 @app.route('/api/submit', methods=['POST'])
-def submit_form():
+def submit_form(collection_name=coll_clinic_equipment_database, source_collection_name=coll_procedure_risk, user_activities_collection_name=coll_user_activities):
     data = request.get_json()
+    print(data)
     # Process the form data as needed
 
     data['tel'] = data['tel'].replace(" ", "").strip()
@@ -102,7 +99,25 @@ def submit_form():
                     "CIT of Procedure": 'cit_of_procedure',
                     "Melasma": 'Melasma'
                 }
-    for record in coll_procedure_risk.find({}, {"_id":0, "created_on": 0, "updated_on": 0, "release": 0, "version": 0}):
+    
+    clinic_id = data['clinic_id']
+
+    modality_list = collection_name.distinct("modality_id", {"clinic_id": ObjectId(clinic_id)})
+
+    del data['clinic_id']
+
+    print(modality_list)
+    
+
+    filter={
+        'modality_id': {
+            '$in': modality_list
+        }
+    }
+
+    print(list(source_collection_name.find(filter=filter, projection={"_id":0, "created_on": 0, "updated_on": 0, "release": 0, "version": 0})))
+
+    for record in source_collection_name.find(filter=filter, projection={"_id":0, "created_on": 0, "updated_on": 0, "release": 0, "version": 0}):
 
         record = {i: record[i] if str(record[i]).strip() != '' else 0 for i in record}
 
@@ -130,7 +145,9 @@ def submit_form():
             jai_record['Melasma'] = False        
         
         json_data.append(jai_record)
+        print(jai_record)
     import pandas as pd
+    print(len(json_data))
     jai_data = pd.DataFrame.from_dict(json_data)
     jai_data.columns = [i.lower().strip().replace(" ", "_") for i in jai_data.columns]
     print(jai_data.columns)
@@ -150,7 +167,7 @@ def submit_form():
         data['recommended_data'] = {data['key']:[recos_data]}
 
         data.pop('key')
-        coll_user_activities.insert_one(data)
+        user_activities_collection_name.insert_one(data)
     else:
         recos_data = {'client-score': client_score, 'inputs': [inputs], 'recos': json_data, 'created_at': data['updated_at']}
         data['recommended_data'] = prev_recos
@@ -159,7 +176,7 @@ def submit_form():
         else:
             data['recommended_data'].update({data['key']:[recos_data]})
         data.pop('key')
-        coll_user_activities.update_one(filter={"_id": data['_id']}, update={'$set': data}, upsert=True)
+        user_activities_collection_name.update_one(filter={"_id": data['_id']}, update={'$set': data}, upsert=True)
 
     # "created_on": 0, "updated_on": 0, "release": 0, "version": 0, 'PIH & Procedure risk': 
 
