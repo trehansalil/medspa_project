@@ -141,7 +141,7 @@ def submit_form(collection_name=coll_clinic_equipment_database, source_collectio
             jai_record['Melasma'] = False        
         
         json_data.append(jai_record)
-        print(jai_record)
+        
     import pandas as pd
     jai_data = pd.DataFrame.from_dict(json_data)
     jai_data.columns = [i.lower().strip().replace(" ", "_") for i in jai_data.columns]
