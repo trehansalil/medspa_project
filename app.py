@@ -390,6 +390,8 @@ def get_equipment(collection_name=coll_clinic_equipment_database):
         else:
             print(collection_name.find_one(filter=filter, projection=projection))
             equipment_list = list(collection_name.find(filter=filter, projection=projection))
+            for i in equipment_list:
+                i['equip_id'] = str(i['equip_id'])
             return jsonify({'success': f'Fetched {len(equipment_list)} equipments for clinic_id: {str(clinic_id)}', "content": equipment_list}), 200
 
     except:
