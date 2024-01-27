@@ -34,6 +34,10 @@ mongo_db_coll_user = config_parser.get('mongo_config', 'mongo_db_coll_user')
 
 mongo_db_coll_equipment_database = config_parser.get('mongo_config', 'mongo_db_coll_equipment_database')
 
+mongo_db_lead_activity_name = config_parser.get('mongo_config', 'mongo_db_lead_activity_name')
+lead_database = config_parser.get('mongo_config', 'lead_database')
+lead_board_database = config_parser.get('mongo_config', 'lead_board_database')
+
 # All file inputs
 g_sheets_url = config_parser.get('input_files', 'g_sheets_url')
 sheet_name1 = config_parser.get('input_files', 'sheet_name1')
@@ -47,6 +51,7 @@ client = MongoClient(mongo_db_uri)
 db = client[mongo_db_name]
 db_backup = client[mongo_db_backup_name]
 db_user_activities = client[mongo_db_user_activity_name]
+db_lead_activities = client[mongo_db_lead_activity_name]
 coll_equipment_database = db[mongo_db_coll_equipment_database]
 
 coll_procedure_risk = db[mongo_db_coll_procedure_risk]
@@ -63,6 +68,8 @@ coll_user_activities = db_user_activities[mongo_db_coll_user]
 coll_clinic_database = db_user_activities[clinic_database]
 coll_clinic_equipment_database = db_user_activities[clinic_equipment_database]
 
+coll_lead_database = db_lead_activities[lead_database]
+coll_lead_board_database = db_lead_activities[lead_board_database]
 
 
 def variable_extractor(var_name='var1', var_type='string'):
