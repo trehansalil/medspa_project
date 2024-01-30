@@ -1,5 +1,6 @@
 import sys
 import os
+import re
 # import streamlit as st
 import configparser
 import json
@@ -8,7 +9,6 @@ from bson import ObjectId
 
 from dateutil.parser import parse
 from pymongo import MongoClient
-
 
 config_path = os.path.join(os.getcwd(), "config_file.config")
 
@@ -37,6 +37,7 @@ mongo_db_coll_equipment_database = config_parser.get('mongo_config', 'mongo_db_c
 mongo_db_lead_activity_name = config_parser.get('mongo_config', 'mongo_db_lead_activity_name')
 lead_database = config_parser.get('mongo_config', 'lead_database')
 lead_board_database = config_parser.get('mongo_config', 'lead_board_database')
+lead_status_database = config_parser.get('mongo_config', 'lead_status_database')
 
 # All file inputs
 g_sheets_url = config_parser.get('input_files', 'g_sheets_url')
@@ -70,27 +71,28 @@ coll_clinic_equipment_database = db_user_activities[clinic_equipment_database]
 
 coll_lead_database = db_lead_activities[lead_database]
 coll_lead_board_database = db_lead_activities[lead_board_database]
+coll_lead_status_database = db_lead_activities[lead_status_database]
 
 
 def variable_extractor(var_name='var1', var_type='string'):
     var = None
     for arg in sys.argv:
         if arg.startswith(f"{var_name}="):
-            if var_type=='string':
+            if var_type == 'string':
                 var = arg.split("=")[1].strip()
-            elif var_type=='float':
+            elif var_type == 'float':
                 var = float(arg.split("=")[1].strip())
-            elif var_type=='datetime':
+            elif var_type == 'datetime':
                 var = parse(arg.split("=")[1].strip())
-            elif var_type=='array':
+            elif var_type == 'array':
                 var = arg.split("=")[1].strip()
                 var = [i.strip() for i in var.split(',')]
-            elif var_type=='dict':
+            elif var_type == 'dict':
                 var = arg.split("=")[1].strip()
                 var = json.loads(var)
-            elif var_type=='bool':
+            elif var_type == 'bool':
                 var = arg.split("=")[1].strip().lower()
-                var = True if var=='true' else (False if var=='false' else None)
+                var = True if var == 'true' else (False if var == 'false' else None)
             else:
                 var = int(arg.split("=")[1])
 
@@ -102,13 +104,13 @@ def variable_extractor(var_name='var1', var_type='string'):
 
 
 def check_id(id, collection_name=coll_user_activities):
-
     sample_data = collection_name.find_one({"_id": id})
     if sample_data is None:
         return True, {}
     else:
         return False, sample_data['recommended_data']
-    
+
+
 def generate_custom_id(name, email, phone, collection_name=coll_user_activities):
     # Concatenate the name, email, and phone number into a single string
     phone = phone.replace(" ", "")
@@ -125,13 +127,14 @@ def generate_custom_id(name, email, phone, collection_name=coll_user_activities)
     bool_exists, prev_recos = check_id(id=custom_id, collection_name=coll_user_activities)
     return custom_id, bool_exists, prev_recos
 
-def _is_new_checker(id, collection_name, variable):
 
+def _is_new_checker(id, collection_name, variable):
     sample_data = collection_name.find_one({variable: id})
     if sample_data is None:
         return True
     else:
         return False
+
 
 def mongo_id_generator(*args, collection_name, variable='_id'):
     # Concatenate all the input arguments into a single string
@@ -142,17 +145,53 @@ def mongo_id_generator(*args, collection_name, variable='_id'):
 
     # Take the first 12 bytes of the hash and convert it to a 24-character hexadecimal string
     custom_id = ObjectId(sha256_hash[:24])
-    
+
     # Assuming check_id is a function that checks if the custom_id exists in the database
-    _is_new_flag = _is_new_checker(id=custom_id,collection_name=collection_name, variable=variable)
-    
+    _is_new_flag = _is_new_checker(id=custom_id, collection_name=collection_name, variable=variable)
+
     return custom_id, _is_new_flag
 
 
-# # Example usage:
-# name = "John Doe"
-# email = "johndoe@example.com"
-# phone = "1234567890"
+class DataValidator:
+    def __init__(self):
+        print(f"Initializing class name: {self.__class__.__name__}\n")
 
-# custom_id = generate_custom_id(name, email, phone)
-# print(custom_id)
+        # Regular expression for basic email validation
+        self.email_pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+
+        # Ensure the name contains only letters
+        self.name_pattern = "^[a-zA-Z]+$"
+
+        # Define a regular expression pattern for a typical 10-digit phone number
+        self.phone_pattern = r'^\d{10}$'
+
+    def is_valid_email(self, email):
+        if email is None:
+            return False  # None is not a valid email
+
+        # Using re.match() to find a match between the regular expression and the email
+        match = re.match(self.email_pattern, email.strip())  # Remove leading and trailing spaces
+
+        # Return True if there is a match, otherwise return False
+        return bool(match)
+
+    def is_valid_name(self, name):
+        if name is None:
+            return False  # None is not a valid name
+
+        if re.match(self.name_pattern, name.strip()):  # Remove leading and trailing spaces
+            return True
+        else:
+            return False
+
+    def is_valid_phone(self, phone_number):
+        if phone_number is None:
+            return False  # None is not a valid phone number
+
+        pattern = re.compile(self.phone_pattern)
+
+        # Use the match() method to check if the phone number matches the pattern
+        match = pattern.match(phone_number.strip())  # Remove leading and trailing spaces
+
+        # Return True if the phone number is valid, False otherwise
+        return bool(match)
