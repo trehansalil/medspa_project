@@ -484,10 +484,12 @@ def lead_capture(collection_name=coll_lead_database,
     try:
         if len(other_keys) != 0:
             other_keys = ", ".join(other_keys)
+            print(other_keys)
             return jsonify({'status': 'error', "responseMessage": "Please remove unnecessary fields",
                             'fields': other_keys}), 404
         elif len(missed_keys) != 0:
             missed_keys = ", ".join(missed_keys)
+            print(missed_keys)
             return jsonify({'status': 'error', "responseMessage": "Please add missing fields",
                             'fields': missed_keys}), 404
         elif data_validator.is_valid_name(record['first_name']):
