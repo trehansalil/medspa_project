@@ -479,7 +479,8 @@ def lead_capture(collection_name=coll_lead_database,
     print(record)
     record_keys = ['first_name', 'last_name', 'phone', 'email', 'message', '_is_deleted', 'source']
     other_keys = [i for i in record if i not in record_keys]
-    missed_keys = [i for i in record_keys if i not in record]
+    missed_keys = [i for i in record_keys if i not in record.keys()]
+    print(missed_keys)
     try:
         if len(other_keys) != 0:
             other_keys = ", ".join(other_keys)
