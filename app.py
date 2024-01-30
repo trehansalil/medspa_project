@@ -536,10 +536,10 @@ def lead_capture(collection_name=coll_lead_database,
             {'status': 'error', "responseMessage": "Sorry some error has occurred please try again later"}), 404
 
 # Lead List Endpoint
-@app.route('/api/lead/list', methods=['GET'])
-def lead_list(collection_name=coll_lead_database):
+@app.route('/api/lead/list/<int:_is_deleted>', methods=['GET'])
+def lead_list(_is_deleted, collection_name=coll_lead_database):
     try:
-        records = [remove_object_ids(record=i, cols=['_id', 'status_id']) for i in collection_name.find(filter={"_is_deleted": 0})]
+        records = [remove_object_ids(record=i, cols=['_id', 'status_id']) for i in collection_name.find(filter={"_is_deleted": _is_deleted})]
         print(records)
         if len(records) != 0:
             return jsonify({'status': 'success', "responseMessage": "Message as per action perform", 'data': records}), 200
