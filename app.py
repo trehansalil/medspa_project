@@ -508,6 +508,10 @@ def lead_capture(collection_name=coll_lead_database,
             issue_col = 'phone'
             return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
                             'fields': issue_col}), 404
+        elif not data_validator.is_valid_name(record['source']):
+            issue_col = 'phone'
+            return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
+                            'fields': issue_col}), 404
 
         record['_id'], record['_is_new'] = mongo_id_generator(record['first_name'], record['last_name'],
                                                               record['email'], record['phone'],
