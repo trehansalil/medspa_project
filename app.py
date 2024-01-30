@@ -540,7 +540,7 @@ def lead_capture(collection_name=coll_lead_database,
 def lead_list(collection_name=coll_lead_database):
     try:
         records = [remove_object_id(record=i, cols=['_id', 'status_id']) for i in collection_name.find(filter={"_is_deleted": 0})]
-
+        print(records)
         if not records:
             return jsonify({'status': 'success', "responseMessage": "Message as per action perform", 'data': records}), 200
         else:
