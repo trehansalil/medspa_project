@@ -165,6 +165,9 @@ class DataValidator:
         # Define a regular expression pattern for a typical 10-digit phone number
         self.phone_pattern = r'^\d{10}$'
 
+        # Define a regular expression pattern for varchar input (alphanumeric with spaces)
+        self.varchar_pattern = "^[a-zA-Z0-9 ]+$"
+
     def is_valid_email(self, email):
         if email is None:
             return False  # None is not a valid email
@@ -195,3 +198,12 @@ class DataValidator:
 
         # Return True if the phone number is valid, False otherwise
         return bool(match)
+
+    def is_valid_varchar(self, text):
+        if text is None:
+            return False  # None is not a valid varchar input
+
+        if re.match(self.varchar_pattern, text.strip()):  # Remove leading and trailing spaces
+            return True
+        else:
+            return False

@@ -473,7 +473,6 @@ def delete_equipment(collection_name=coll_clinic_equipment_database):
 @app.route('/api/lead/capture', methods=['POST'])
 def lead_capture(collection_name=coll_lead_database,
                  status_collection_name=coll_lead_status_database):
-
     record = request.get_json()
 
     print(record)
@@ -524,6 +523,66 @@ def lead_capture(collection_name=coll_lead_database,
 
         if record_content is not None:
             return jsonify({'status': 'error', "responseMessage": "User already exists"}), 404
+        else:
+            record['created_on'] = datetime.now()
+            record['updated_on'] = record['created_on']
+            collection_name.insert_one(record)
+            return jsonify({'status': 'success', "responseMessage": "Message as per action perform"}), 200
+
+    except Exception as e:
+        print(e)
+        return jsonify(
+            {'status': 'error', "responseMessage": "Sorry some error has occurred please try again later"}), 404
+
+
+# Lead Status Endpoint
+@app.route('/api/lead/status/add', methods=['POST'])
+def lead_status_add(collection_name=coll_lead_status_database):
+    record = request.get_json()
+
+    print(record)
+    record_keys = ['name', 'label_color']
+    other_keys = [i for i in record if i not in record_keys]
+    missed_keys = [i for i in record_keys if i not in record.keys()]
+
+    try:
+        if len(other_keys) != 0:
+            other_keys = ", ".join(other_keys)
+            print(other_keys)
+            return jsonify({'status': 'error', "responseMessage": "Please remove unnecessary fields",
+                            'fields': other_keys}), 404
+        elif len(missed_keys) != 0:
+            missed_keys = ", ".join(missed_keys)
+            print(missed_keys)
+            return jsonify({'status': 'error', "responseMessage": "Please add missing fields",
+                            'fields': missed_keys}), 404
+        elif not data_validator.is_valid_varchar(record['name']):
+            issue_col = 'name'
+            return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
+                            'fields': issue_col}), 404
+        elif not data_validator.is_valid_varchar(record['label_color']):
+            issue_col = 'label_color'
+            return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
+                            'fields': issue_col}), 404
+
+        record['_id'], record['_is_new'] = mongo_id_generator(record['name'],
+                                                              collection_name=collection_name,
+                                                              variable='_id')
+
+        count_collection_docs = collection_name.count_documents({})
+
+        if count_collection_docs == 0:
+            record['_is_default'] = 1
+            record['priority'] = 1
+        else:
+            record['_is_default'] = 0
+            record['priority'] = count_collection_docs + 1
+        record['_is_deleted'] = 0
+
+        record_content = collection_name.find_one({"_id": record["_id"]})
+
+        if record_content is not None:
+            return jsonify({'status': 'error', "responseMessage": "Status already exists"}), 404
         else:
             record['created_on'] = datetime.now()
             record['updated_on'] = record['created_on']
