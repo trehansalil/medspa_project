@@ -595,6 +595,7 @@ def lead_status_add(collection_name=coll_lead_status_database):
             {'status': 'error', "responseMessage": "Sorry some error has occurred please try again later"}), 404
 
 
+
 # # Lead Update Endpoint
 # @app.route('/api/lead/update', methods=['POST'])
 # def lead_update(collection_name=coll_lead_database):
