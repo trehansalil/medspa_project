@@ -541,7 +541,7 @@ def lead_list(collection_name=coll_lead_database):
     try:
         records = [remove_object_id(record=i, cols=['_id', 'status_id']) for i in collection_name.find(filter={"_is_deleted": 0})]
         print(records)
-        if not records:
+        if len(records) != 0:
             return jsonify({'status': 'success', "responseMessage": "Message as per action perform", 'data': records}), 200
         else:
             return jsonify({'status': 'error', "responseMessage": "No data found"}), 404
