@@ -152,8 +152,12 @@ def mongo_id_generator(*args, collection_name, variable='_id'):
     return custom_id, _is_new_flag
 
 
-def remove_object_id(record, cols):
-    record = {str(i) if i in cols else i : record[i] for i in record}
+def remove_object_ids(record, cols):
+    for key, value in record.items():
+        if key in cols and isinstance(value, ObjectId):
+            record[key] = str(value)  # Convert ObjectId to string
+        elif isinstance(value, dict):
+            remove_object_ids(value, cols)  # Recursive call for nested dictionaries
     return record
 
 
