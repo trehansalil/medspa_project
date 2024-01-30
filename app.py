@@ -509,7 +509,7 @@ def lead_capture(collection_name=coll_lead_database,
             return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
                             'fields': issue_col}), 404
         elif not data_validator.is_valid_name(record['source']):
-            issue_col = 'phone'
+            issue_col = 'source'
             return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
                             'fields': issue_col}), 404
 
