@@ -492,19 +492,19 @@ def lead_capture(collection_name=coll_lead_database,
             print(missed_keys)
             return jsonify({'status': 'error', "responseMessage": "Please add missing fields",
                             'fields': missed_keys}), 404
-        elif data_validator.is_valid_name(record['first_name']):
+        elif not data_validator.is_valid_name(record['first_name']):
             issue_col = 'first_name'
             return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
                             'fields': issue_col}), 404
-        elif data_validator.is_valid_name(record['last_name']):
+        elif not data_validator.is_valid_name(record['last_name']):
             issue_col = 'last_name'
             return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
                             'fields': issue_col}), 404
-        elif data_validator.is_valid_email(record['email']):
+        elif not data_validator.is_valid_email(record['email']):
             issue_col = 'email'
             return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
                             'fields': issue_col}), 404
-        elif data_validator.is_valid_phone(record['phone']):
+        elif not data_validator.is_valid_phone(record['phone']):
             issue_col = 'phone'
             return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
                             'fields': issue_col}), 404
