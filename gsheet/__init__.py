@@ -152,6 +152,11 @@ def mongo_id_generator(*args, collection_name, variable='_id'):
     return custom_id, _is_new_flag
 
 
+def remove_object_id(record, cols):
+    record = {str(i) if i in cols else i : record[i] for i in record}
+    return record
+
+
 class DataValidator:
     def __init__(self):
         print(f"Initializing class name: {self.__class__.__name__}\n")
