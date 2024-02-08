@@ -177,7 +177,7 @@ class DataValidator:
         self.phone_pattern = r'^\d{10}$'
 
         # Define a regular expression pattern for varchar input (alphanumeric with spaces)
-        self.varchar_pattern = "^[a-zA-Z0-9 ]+$"
+        self.varchar_pattern = "^.{1,255}$"
 
     def is_valid_email(self, email):
         if email is None:
@@ -189,11 +189,11 @@ class DataValidator:
         # Return True if there is a match, otherwise return False
         return bool(match)
 
-    def is_valid_name(self, name):
+    def is_valid_varchar(self, name):
         if name is None:
             return False  # None is not a valid name
 
-        if re.match(self.name_pattern, name.strip()):  # Remove leading and trailing spaces
+        if re.match(self.varchar_pattern, name.strip()):  # Remove leading and trailing spaces
             return True
         else:
             return False
@@ -210,26 +210,17 @@ class DataValidator:
         # Return True if the phone number is valid, False otherwise
         return bool(match)
 
-    def is_valid_varchar(self, text):
-        if text is None:
-            return False  # None is not a valid varchar input
+    def is_valid_object_id(self, object_id):
+        """
+        Check if the given string is a valid MongoDB ObjectId.
 
-        if re.match(self.varchar_pattern, text.strip()):  # Remove leading and trailing spaces
-            return True
-        else:
-            return False
+        Args:
+        object_id (str): The string to check.
 
+        Returns:
+        bool: True if the string is a valid MongoDB ObjectId, False otherwise.
+        """
+        # Regular expression to match a valid ObjectId
+        pattern = re.compile(r'^[0-9a-fA-F]{24}$')
+        return bool(pattern.match(object_id))
 
-def is_valid_object_id(object_id):
-    """
-    Check if the given string is a valid MongoDB ObjectId.
-
-    Args:
-    object_id (str): The string to check.
-
-    Returns:
-    bool: True if the string is a valid MongoDB ObjectId, False otherwise.
-    """
-    # Regular expression to match a valid ObjectId
-    pattern = re.compile(r'^[0-9a-fA-F]{24}$')
-    return bool(pattern.match(object_id))

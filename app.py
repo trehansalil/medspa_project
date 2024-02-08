@@ -585,7 +585,7 @@ def lead_view(_id, collection_name=coll_lead_database):
 
 
 # Lead Update Endpoint
-@app.route('/api/lead/view/<string:_id>', methods=['POST'])
+@app.route('/api/lead/update', methods=['POST'])
 def lead_update(collection_name=coll_lead_database, status_collection_name=coll_lead_status_database):
     record = request.get_json()
 
@@ -603,21 +603,23 @@ def lead_update(collection_name=coll_lead_database, status_collection_name=coll_
                 {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': "_id"}), 404
         capture_expected_format = coll_lead_format.find_one()
         for key in record:
-            if capture_expected_format[key] == 'is_valid_name':
-                if not data_validator.is_valid_name(record[key]):
+            if capture_expected_format[key] == 'is_valid_varchar':
+                if not data_validator.is_valid_varchar(record[key]):
                     return jsonify(
                         {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
             elif capture_expected_format[key] == 'is_valid_email':
-                if not data_validator.is_valid_name(record[key]):
+                if not data_validator.is_valid_email(record[key]):
                     return jsonify(
                         {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
             elif capture_expected_format[key] == 'is_valid_phone':
-                if not data_validator.is_valid_name(record[key]):
+                if not data_validator.is_valid_phone(record[key]):
                     return jsonify(
                         {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
+                else:
+                    record[key] = int(record[key])
             elif capture_expected_format[key] == 'oid':
                 if not isinstance(record[key], ObjectId):
-                    if not is_valid_object_id(record[key]):
+                    if not data_validator.is_valid_object_id(record[key]):
                         return jsonify(
                             {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
                     else:
@@ -639,7 +641,6 @@ def lead_update(collection_name=coll_lead_database, status_collection_name=coll_
             {'status': 'error', "responseMessage": "Sorry some error has occurred please try again later"}), 404
 
 
-# Lead Archive Endpoint
 @app.route('/api/lead/archive/<string:_id>', methods=['POST'])
 def lead_archive(_id, collection_name=coll_lead_database):
     record = {}
