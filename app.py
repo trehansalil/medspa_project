@@ -491,11 +491,11 @@ def lead_capture(collection_name=coll_lead_database,
             print(missed_keys)
             return jsonify({'status': 'error', "responseMessage": "Please add missing fields",
                             'fields': missed_keys}), 404
-        elif not data_validator.is_valid_name(record['first_name']):
+        elif not data_validator.is_valid_varchar(record['first_name']):
             issue_col = 'first_name'
             return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
                             'fields': issue_col}), 404
-        elif not data_validator.is_valid_name(record['last_name']):
+        elif not data_validator.is_valid_varchar(record['last_name']):
             issue_col = 'last_name'
             return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
                             'fields': issue_col}), 404
@@ -507,7 +507,7 @@ def lead_capture(collection_name=coll_lead_database,
             issue_col = 'phone'
             return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
                             'fields': issue_col}), 404
-        elif not data_validator.is_valid_name(record['source']):
+        elif not data_validator.is_valid_varchar(record['source']):
             issue_col = 'source'
             return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
                             'fields': issue_col}), 404
@@ -633,7 +633,7 @@ def lead_update(collection_name=coll_lead_database, status_collection_name=coll_
             return jsonify({'status': 'success', "responseMessage": "Message as per action perform"}), 200
 
         else:
-            return jsonify({'status': 'error', "responseMessage": "User already exists"}), 404
+            return jsonify({'status': 'error', "responseMessage": "User doesn't exists"}), 404
 
     except Exception as e:
         print(e)
