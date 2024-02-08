@@ -38,6 +38,7 @@ mongo_db_lead_activity_name = config_parser.get('mongo_config', 'mongo_db_lead_a
 lead_database = config_parser.get('mongo_config', 'lead_database')
 lead_board_database = config_parser.get('mongo_config', 'lead_board_database')
 lead_status_database = config_parser.get('mongo_config', 'lead_status_database')
+lead_format = config_parser.get('mongo_config', 'lead_format')
 
 # All file inputs
 g_sheets_url = config_parser.get('input_files', 'g_sheets_url')
@@ -72,6 +73,7 @@ coll_clinic_equipment_database = db_user_activities[clinic_equipment_database]
 coll_lead_database = db_lead_activities[lead_database]
 coll_lead_board_database = db_lead_activities[lead_board_database]
 coll_lead_status_database = db_lead_activities[lead_status_database]
+coll_lead_format = db_lead_activities[lead_format]
 
 
 def variable_extractor(var_name='var1', var_type='string'):
@@ -216,3 +218,18 @@ class DataValidator:
             return True
         else:
             return False
+
+
+def is_valid_object_id(object_id):
+    """
+    Check if the given string is a valid MongoDB ObjectId.
+
+    Args:
+    object_id (str): The string to check.
+
+    Returns:
+    bool: True if the string is a valid MongoDB ObjectId, False otherwise.
+    """
+    # Regular expression to match a valid ObjectId
+    pattern = re.compile(r'^[0-9a-fA-F]{24}$')
+    return bool(pattern.match(object_id))

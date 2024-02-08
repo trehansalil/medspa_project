@@ -535,14 +535,17 @@ def lead_capture(collection_name=coll_lead_database,
         return jsonify(
             {'status': 'error', "responseMessage": "Sorry some error has occurred please try again later"}), 404
 
+
 # Lead List Endpoint
 @app.route('/api/lead/list/<int:_is_deleted>', methods=['GET'])
 def lead_list(_is_deleted, collection_name=coll_lead_database):
     try:
-        records = [remove_object_ids(record=i, cols=['_id', 'status_id']) for i in collection_name.find(filter={"_is_deleted": _is_deleted})]
+        records = [remove_object_ids(record=i, cols=['_id', 'status_id']) for i in
+                   collection_name.find(filter={"_is_deleted": _is_deleted})]
         print(records)
         if len(records) != 0:
-            return jsonify({'status': 'success', "responseMessage": "Message as per action perform", 'data': records}), 200
+            return jsonify(
+                {'status': 'success', "responseMessage": "Message as per action perform", 'data': records}), 200
         else:
             return jsonify({'status': 'error', "responseMessage": "No data found"}), 404
 
@@ -552,6 +555,89 @@ def lead_list(_is_deleted, collection_name=coll_lead_database):
             'status': 'error',
             "responseMessage": "Sorry, some error has occurred. Please try again later"
         }), 404
+
+
+# Lead View Endpoint
+@app.route('/api/lead/view/<string:_id>', methods=['GET'])
+def lead_view(_id, collection_name=coll_lead_database):
+    record = {}
+    print(_id)
+    try:
+        record['_id'] = ObjectId(_id)
+        record_content = collection_name.find_one(filter={"_id": record['_id']})
+
+        if record_content is not None:
+
+            record_content = remove_object_ids(record=record_content, cols=['_id', 'status_id'])
+
+            return jsonify(
+                {'status': 'success', "responseMessage": "Message as per action perform", 'data': record_content}), 200
+        else:
+            record['updated_on'] = record['created_on']
+            return jsonify({'status': 'error', "responseMessage": "User doesn't exist"}), 404
+
+    except Exception as e:
+        print(e)
+        return jsonify({
+            'status': 'error',
+            "responseMessage": "Sorry, some error has occurred. Please try again later"
+        }), 404
+
+
+# Lead Update Endpoint
+@app.route('/api/lead/view/<string:_id>', methods=['POST'])
+def lead_update(collection_name=coll_lead_database, status_collection_name=coll_lead_status_database):
+    record = request.get_json()
+
+    print(record)
+    # record_keys = ['first_name', 'last_name', 'phone', 'email', 'message', 'source']
+    # other_keys = [i for i in record if i not in record_keys]
+    # missed_keys = [i for i in record_keys if i not in record.keys()]
+    # print(missed_keys)
+
+    try:
+        if 'status_id' in record:
+            record['status_id'] = status_collection_name.find_one({'name': record['status_id']})['_id']
+        if "_id" not in record:
+            return jsonify(
+                {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': "_id"}), 404
+        capture_expected_format = coll_lead_format.find_one()
+        for key in record:
+            if capture_expected_format[key] == 'is_valid_name':
+                if not data_validator.is_valid_name(record[key]):
+                    return jsonify(
+                        {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
+            elif capture_expected_format[key] == 'is_valid_email':
+                if not data_validator.is_valid_name(record[key]):
+                    return jsonify(
+                        {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
+            elif capture_expected_format[key] == 'is_valid_phone':
+                if not data_validator.is_valid_name(record[key]):
+                    return jsonify(
+                        {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
+            elif capture_expected_format[key] == 'oid':
+                if not isinstance(record[key], ObjectId):
+                    if not is_valid_object_id(record[key]):
+                        return jsonify(
+                            {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
+                    else:
+                        record[key] = ObjectId(record[key])
+
+        record_content = collection_name.find_one(filter={"_id": record['_id']})
+
+        if record_content is not None:
+            record['updated_on'] = datetime.now()
+            collection_name.update_one(filter={"_id": record['_id']}, update={'$set': record})
+            return jsonify({'status': 'success', "responseMessage": "Message as per action perform"}), 200
+
+        else:
+            return jsonify({'status': 'error', "responseMessage": "User already exists"}), 404
+
+    except Exception as e:
+        print(e)
+        return jsonify(
+            {'status': 'error', "responseMessage": "Sorry some error has occurred please try again later"}), 404
+
 
 # Lead Archive Endpoint
 @app.route('/api/lead/archive/<string:_id>', methods=['POST'])
@@ -578,6 +664,7 @@ def lead_archive(_id, collection_name=coll_lead_database):
             "responseMessage": "Sorry, some error has occurred. Please try again later"
         }), 404
 
+
 # Lead Restore Endpoint
 @app.route('/api/lead/restore/<string:_id>', methods=['POST'])
 def lead_restore(_id, collection_name=coll_lead_database):
@@ -603,6 +690,7 @@ def lead_restore(_id, collection_name=coll_lead_database):
             "responseMessage": "Sorry, some error has occurred. Please try again later"
         }), 404
 
+
 # Lead Delete Endpoint
 @app.route('/api/lead/delete/<string:_id>', methods=['POST'])
 def lead_delete(_id, collection_name=coll_lead_database):
@@ -625,6 +713,7 @@ def lead_delete(_id, collection_name=coll_lead_database):
             'status': 'error',
             "responseMessage": "Sorry, some error has occurred. Please try again later"
         }), 404
+
 
 # Lead Status Endpoint
 @app.route('/api/lead/status/add', methods=['POST'])
@@ -684,6 +773,7 @@ def lead_status_add(collection_name=coll_lead_status_database):
         print(e)
         return jsonify(
             {'status': 'error', "responseMessage": "Sorry some error has occurred please try again later"}), 404
+
 
 # # Lead Update Endpoint
 # @app.route('/api/lead/update', methods=['POST'])
