@@ -512,23 +512,28 @@ def lead_capture(collection_name=coll_lead_database,
             return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
                             'fields': issue_col}), 404
 
-        record['_id'], record['_is_new'] = mongo_id_generator(record['first_name'], record['last_name'],
-                                                              record['email'], record['phone'],
-                                                              collection_name=collection_name,
-                                                              variable='_id')
+        # record['_id'], record['_is_new'] = mongo_id_generator(record['first_name'], record['last_name'],
+        #                                                       record['email'], record['phone'],
+        #                                                       collection_name=collection_name,
+        #                                                       variable='_id')
         record['phone'] = int(record['phone'])
         record['status_id'] = status_collection_name.find_one({'_is_default': 1})['_id']
         record['_is_deleted'] = 0
 
-        record_content = collection_name.find_one(filter={"_id": record['_id']})
-
-        if record_content is not None:
-            return jsonify({'status': 'error', "responseMessage": "User already exists"}), 404
-        else:
-            record['created_on'] = datetime.now()
-            record['updated_on'] = record['created_on']
-            collection_name.insert_one(record)
-            return jsonify({'status': 'success', "responseMessage": "Message as per action perform"}), 200
+        # record_content = collection_name.find_one(filter={"_id": record['_id']})
+        #
+        # if record_content is not None:
+        #     return jsonify({'status': 'error', "responseMessage": "User already exists"}), 404
+        # else:
+        #     record['created_on'] = datetime.now()
+        #     record['updated_on'] = record['created_on']
+        #     collection_name.insert_one(record)
+        #     return jsonify({'status': 'success', "responseMessage": "Message as per action perform"}), 200
+        record['created_on'] = datetime.now()
+        record['updated_on'] = record['created_on']
+        print(record)
+        collection_name.insert_one(record)
+        return jsonify({'status': 'success', "responseMessage": "Message as per action perform"}), 200
 
     except Exception as e:
         print(e)
