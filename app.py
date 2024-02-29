@@ -780,6 +780,26 @@ def lead_status_add(collection_name=coll_lead_status_database):
         return jsonify(
             {'status': 'error', "responseMessage": "Sorry some error has occurred please try again later"}), 404
 
+# Leadboard List Endpoint
+@app.route('/api/lead/status/list', methods=['GET'])
+def lead_status_list(collection_name=coll_lead_status_database):
+
+    try:
+        records = [remove_object_ids(record=i, cols=['_id']) for i in coll_lead_status_database.find()]
+        print(records)
+        if len(records) != 0:
+            return jsonify(
+                {'status': 'success', "responseMessage": "Message as per action perform", 'data': records}), 200
+        else:
+            return jsonify({'status': 'error', "responseMessage": "No data found"}), 404
+
+    except Exception as e:
+        print(e)
+        return jsonify({
+            'status': 'error',
+            "responseMessage": "Sorry, some error has occurred. Please try again later"
+        }), 404
+
 
 # # Lead Update Endpoint
 # @app.route('/api/lead/update', methods=['POST'])
