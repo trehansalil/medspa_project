@@ -177,7 +177,7 @@ class DataValidator:
         self.phone_pattern = r'^\d{10}$'
 
         # Define a regular expression pattern for varchar input (alphanumeric with spaces)
-        self.varchar_pattern = "^.{1,255}$"
+        self.varchar_pattern = r'^[a-zA-Z0-9_]+$'
 
     def is_valid_email(self, email):
         if email is None:
@@ -189,14 +189,11 @@ class DataValidator:
         # Return True if there is a match, otherwise return False
         return bool(match)
 
-    def is_valid_varchar(self, name):
-        if name is None:
+    def is_valid_varchar(self, varchar, max_length=255):
+        if varchar is None:
             return False  # None is not a valid name
 
-        if re.match(self.varchar_pattern, name.strip()):  # Remove leading and trailing spaces
-            return True
-        else:
-            return False
+        return isinstance(varchar, str) and len(varchar) <= max_length and re.match(self.varchar_pattern, varchar)  # Remove leading and trailing spaces
 
     def is_valid_phone(self, phone_number):
         if phone_number is None:
@@ -223,4 +220,17 @@ class DataValidator:
         # Regular expression to match a valid ObjectId
         pattern = re.compile(r'^[0-9a-fA-F]{24}$')
         return bool(pattern.match(object_id))
+
+    def is_valid_int(self, integer, limit):
+        """
+        Check if the given string is a valid integer between 0 and the specified limit.
+
+        Args:
+        integer (str): The string to check.
+        limit (int): The upper limit for the integer.
+
+        Returns:
+        bool: True if the string is a valid integer between 0 and the limit, False otherwise.
+        """
+        return integer.isdigit() and 0 <= int(integer) <= limit
 
