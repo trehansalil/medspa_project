@@ -193,7 +193,7 @@ class DataValidator:
         if varchar is None:
             return False  # None is not a valid name
 
-        return isinstance(varchar, str) and len(varchar) <= max_length and re.match(self.varchar_pattern, varchar)  # Remove leading and trailing spaces
+        return isinstance(varchar, str) and len(varchar) <= max_length  # Remove leading and trailing spaces
 
     def is_valid_phone(self, phone_number):
         if phone_number is None:

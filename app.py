@@ -4,6 +4,7 @@ from datetime import datetime
 from flask import Flask, request, jsonify, render_template
 
 from gsheet import *
+from medspa.exception import CustomException
 
 app = Flask(__name__, static_folder=os.path.join(os.getcwd(), 'static'))
 
@@ -780,6 +781,27 @@ def leadboard_status_add(collection_name=coll_lead_status_database):
             {'status': 'error', "responseMessage": "Sorry some error has occurred please try again later"}), 404
 
 
+# Leadboard Status List Endpoint
+@app.route('/api/leadboard/status/list', methods=['GET'])
+def leadboard_status_list(collection_name=coll_lead_status_database):
+    try:
+        records = [remove_object_ids(record=i, cols=['_id', 'status_id']) for i in
+                   collection_name.find()]
+        print(records)
+        if len(records) != 0:
+            return jsonify(
+                {'status': 'success', "responseMessage": "Message as per action perform", 'data': records}), 200
+        else:
+            return jsonify({'status': 'error', "responseMessage": "No data found"}), 404
+
+    except Exception as e:
+        print(e)
+        return jsonify({
+            'status': 'error',
+            "responseMessage": "Sorry, some error has occurred. Please try again later"
+        }), 404
+
+
 # Leadboard Status Edit Endpoint
 @app.route('/api/leadboard/status/edit/<string:_id>', methods=['GET'])
 def leadboard_status_edit(_id, collection_name=coll_lead_status_database):
@@ -811,6 +833,7 @@ def leadboard_status_edit(_id, collection_name=coll_lead_status_database):
 @app.route('/api/leadboard/status/update', methods=['POST'])
 def leadboard_status_update(collection_name=coll_lead_status_database, lead_database=coll_lead_database):
     record = request.get_json()
+    record['_id'] = ObjectId(record['_id'])
 
     print(record)
 
@@ -819,15 +842,21 @@ def leadboard_status_update(collection_name=coll_lead_status_database, lead_data
             return jsonify(
                 {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': "_id"}), 404
         capture_expected_format = coll_lead_format.find_one({"type": 'status'})
+        del capture_expected_format['type']
+        print(capture_expected_format)
         for key in record:
             if capture_expected_format[key] == 'is_valid_varchar':
-                if not data_validator.is_valid_varchar(record[key], max_length=6):
+                a_length = 6 if key == 'label_color' else 255
+                if not data_validator.is_valid_varchar(record[key], max_length=a_length):
                     return jsonify(
                         {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
+                print(f"{record[key]}\n")
             elif capture_expected_format[key] == 'is_valid_int':
                 if not data_validator.is_valid_int(record[key], limit=99):
                     return jsonify(
                         {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
+                else:
+                    record[key] = int(record[key])
             elif capture_expected_format[key] == 'is_valid_email':
                 if not data_validator.is_valid_email(record[key]):
                     return jsonify(
@@ -850,41 +879,65 @@ def leadboard_status_update(collection_name=coll_lead_status_database, lead_data
 
         if record_content is not None:
             if 'name' in record:
-                if record_content['name'] != record_content['name']:
+                if record['name'] != record_content['name']:
                     record['_id'], record['_is_new'] = mongo_id_generator(record['name'],
                                                                           collection_name=collection_name,
                                                                           variable='_id')
-                    coll_lead_status_database.update_one(filter={"_id": record_content['_id']}, update={'$set': record})
+                    coll_lead_status_database.delete_one(
+                        filter={"_id": record_content['_id']}
+                    )
+                    coll_lead_status_database.update_one(
+                        filter={"_id": record['_id']},
+                        update={'$set': record},
+                        upsert=True
+                    )
             if 'priority' in record:
                 if record_content['priority'] == 1:
                     del record_content['priority']
                 else:
-                    if record['priority']>record_content['priority']:
+                    if record['priority'] > record_content['priority']:
                         collection_name.update_many(
                             {"priority": {"$gt": record_content['priority'], "$lte": record['priority']}},
                             {"$inc": {"priority": -1}}
                         )
-                    elif record['priority']<record_content['priority']:
+                    elif record['priority'] < record_content['priority']:
                         collection_name.update_many(
                             {"priority": {"$gte": record['priority'], "$lt": record_content['priority']}},
                             {"$inc": {"priority": 1}}
                         )
 
             record['updated_on'] = datetime.now()
-            collection_name.update_one(filter={"_id": record_content['_id']}, update={'$set': record})
-            lead_database.update_many(
-                {"status_id": record_content['_id']},
-                {"$set": {"status_id": record['_id']}}
-            )
+            if record['name'] != record_content['name']:
+                for i in record_content:
+                    if i not in record:
+                        record[i] = record_content[i]
+                coll_lead_status_database.update_one(
+                    filter={"_id": record['_id']},
+                    update={'$set': record},
+                    upsert=True
+                )
+                lead_database.update_many(
+                    {"status_id": record_content['_id']},
+                    {"$set": {"status_id": record['_id']}}
+                )
+                coll_lead_status_database.delete_one(
+                    filter={"_id": record_content['_id']}
+                )
+            else:
+                collection_name.update_one(
+                    filter={"_id": record_content['_id']},
+                    update={'$set': record}
+                )
             return jsonify({'status': 'success', "responseMessage": "Message as per action perform"}), 200
 
         else:
             return jsonify({'status': 'error', "responseMessage": "Status doesn't exists"}), 404
 
     except Exception as e:
-        print(e)
-        return jsonify(
-            {'status': 'error', "responseMessage": "Sorry some error has occurred please try again later"}), 404
+        raise CustomException(e, sys) from e
+        # print(e)
+        # return jsonify(
+        #     {'status': 'error', "responseMessage": "Sorry some error has occurred please try again later"}), 404
 
 
 # Leadboard Status Delete Endpoint
