@@ -894,6 +894,8 @@ def leadboard_status_update(collection_name=coll_lead_status_database, lead_data
             if 'priority' in record:
                 if record_content['priority'] == 1:
                     del record_content['priority']
+                elif (record['priority'] == 1) & (record_content['priority'] != 1):
+                    record['priority'] = record_content['priority']
                 else:
                     if record['priority'] > record_content['priority']:
                         collection_name.update_many(
