@@ -1050,6 +1050,50 @@ def email_template_add(collection_name=coll_email_template_database, lead_databa
             {'status': 'error', "responseMessage": "Sorry some error has occurred please try again later"}), 404
 
 
+# Email Template List Endpoint
+@app.route('/api/email_template/list', methods=['GET'])
+def email_template_list(collection_name=coll_email_template_database):
+    try:
+        records = [remove_object_ids(record=i, cols=['_id']) for i in
+                   collection_name.find()]
+        print(records)
+        if len(records) != 0:
+            return jsonify(
+                {'status': 'success', "responseMessage": "Message as per action perform", 'data': records}), 200
+        else:
+            return jsonify({'status': 'error', "responseMessage": "No data found"}), 404
+
+    except Exception as e:
+        print(e)
+        return jsonify({
+            'status': 'error',
+            "responseMessage": "Sorry, some error has occurred. Please try again later"
+        }), 404
+
+
+# Email Template Delete Endpoint
+@app.route('/api/email_template/delete/<string:_id>', methods=['POST'])
+def email_template_delete(_id, collection_name=coll_email_template_database):
+    record = {}
+    print(_id)
+    try:
+        record['_id'] = ObjectId(_id)
+        record_content = collection_name.find_one(filter={"_id": record['_id']})
+
+        if record_content is not None:
+            collection_name.delete_one(filter={"_id": record['_id']})
+            return jsonify({'status': 'success', "responseMessage": "Message as per action perform"}), 200
+        else:
+            record['updated_on'] = record['created_on']
+            return jsonify({'status': 'error', "responseMessage": "Status doesn't exist"}), 404
+
+    except Exception as e:
+        print(e)
+        return jsonify({
+            'status': 'error',
+            "responseMessage": "Sorry, some error has occurred. Please try again later"
+        }), 404
+
 
 if __name__ == '__main__':
     app.secret_key = 'A1Zr98j/3yX R~XHH!jmN]LWX/,?RT'
