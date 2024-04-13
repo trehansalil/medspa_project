@@ -841,7 +841,7 @@ def leadboard_status_update(collection_name=coll_lead_status_database, lead_data
         if "_id" not in record:
             return jsonify(
                 {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': "_id"}), 404
-        capture_expected_format = coll_lead_format.find_one({"type": 'status'})
+        capture_expected_format = lead_database.find_one({"type": 'status'})
         del capture_expected_format['type']
         print(capture_expected_format)
         for key in record:
@@ -964,6 +964,90 @@ def leadboard_status_delete(_id, collection_name=coll_lead_status_database):
             'status': 'error',
             "responseMessage": "Sorry, some error has occurred. Please try again later"
         }), 404
+
+
+# Email Template Add Endpoint
+@app.route('/api/email_template/add', methods=['POST'])
+def email_template_add(collection_name=coll_email_template_database, lead_database=coll_lead_format):
+    record = request.get_json()
+
+    print(record)
+    record_keys = ['title', 'html_code', 'status']
+    other_keys = [i for i in record if i not in record_keys]
+    missed_keys = [i for i in record_keys if i not in record.keys()]
+
+    try:
+        if len(other_keys) != 0:
+            other_keys = ", ".join(other_keys)
+            print(other_keys)
+            return jsonify({'status': 'error', "responseMessage": "Please remove unnecessary fields",
+                            'fields': other_keys}), 404
+        elif len(missed_keys) != 0:
+            missed_keys = ", ".join(missed_keys)
+            print(missed_keys)
+            return jsonify({'status': 'error', "responseMessage": "Please add missing fields",
+                            'fields': missed_keys}), 404
+
+        capture_expected_format = lead_database.find_one({"type": 'email_template'})
+        del capture_expected_format['type']
+        print(capture_expected_format)
+
+        for key in record:
+            if capture_expected_format[key] == 'is_valid_varchar':
+                a_length = 6000 if key == 'html_code' else 255
+                if not data_validator.is_valid_varchar(record[key], max_length=a_length):
+                    return jsonify(
+                        {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
+                print(f"{record[key]}\n")
+            elif capture_expected_format[key] == 'is_valid_int':
+                if not data_validator.is_valid_int(record[key], limit=200):
+                    return jsonify(
+                        {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
+                else:
+                    record[key] = int(record[key])
+            elif capture_expected_format[key] == 'is_valid_email':
+                if not data_validator.is_valid_email(record[key]):
+                    return jsonify(
+                        {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
+            elif capture_expected_format[key] == 'is_valid_phone':
+                if not data_validator.is_valid_phone(record[key]):
+                    return jsonify(
+                        {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
+                else:
+                    record[key] = int(record[key])
+            elif capture_expected_format[key] in ['oid', 'oid1', 'oid2']:
+                if not isinstance(record[key], ObjectId):
+                    if not data_validator.is_valid_object_id(record[key]):
+                        return jsonify(
+                            {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
+                    else:
+                        record[key] = ObjectId(record[key])
+
+        # count_collection_docs = collection_name.count_documents({})
+
+        # if count_collection_docs == 0:
+        #     record['status'] = 1
+        # else:
+        #     record['status'] = count_collection_docs + 1
+
+        record['created_on'] = datetime.now()
+        record['updated_on'] = record['created_on']
+        collection_name.insert_one(record)
+        return jsonify({'status': 'success', "responseMessage": "Message as per action perform"}), 200
+        # record_content = collection_name.find_one({"_id": record["_id"]})
+        #
+        # if record_content is not None:
+        #     return jsonify({'status': 'error', "responseMessage": "Status already exists"}), 404
+        # else:
+        #     record['created_on'] = datetime.now()
+        #     record['updated_on'] = record['created_on']
+        #     collection_name.insert_one(record)
+        #     return jsonify({'status': 'success', "responseMessage": "Message as per action perform"}), 200
+
+    except Exception as e:
+        print(e)
+        return jsonify(
+            {'status': 'error', "responseMessage": "Sorry some error has occurred please try again later"}), 404
 
 
 if __name__ == '__main__':
