@@ -1050,6 +1050,7 @@ def email_template_add(collection_name=coll_email_template_database, lead_databa
             {'status': 'error', "responseMessage": "Sorry some error has occurred please try again later"}), 404
 
 
+
 if __name__ == '__main__':
     app.secret_key = 'A1Zr98j/3yX R~XHH!jmN]LWX/,?RT'
     app.run(host='0.0.0.0', port=8080, debug=True)
