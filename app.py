@@ -1071,6 +1071,33 @@ def email_template_list(collection_name=coll_email_template_database):
         }), 404
 
 
+# Leadboard Status Edit Endpoint
+@app.route('/api/email_template/edit/<string:_id>', methods=['GET'])
+def email_template_edit(_id, collection_name=coll_email_template_database):
+    record = {}
+    print(_id)
+    try:
+        record['_id'] = ObjectId(_id)
+        record_content = collection_name.find_one(filter={"_id": record['_id']})
+
+        if record_content is not None:
+
+            record_content = remove_object_ids(record=record_content, cols=['_id'])
+
+            return jsonify(
+                {'status': 'success', "responseMessage": "Message as per action perform", 'data': record_content}), 200
+        else:
+            record['updated_on'] = record['created_on']
+            return jsonify({'status': 'error', "responseMessage": "Status doesn't exist"}), 404
+
+    except Exception as e:
+        print(e)
+        return jsonify({
+            'status': 'error',
+            "responseMessage": "Sorry, some error has occurred. Please try again later"
+        }), 404
+
+
 # Email Template Delete Endpoint
 @app.route('/api/email_template/delete/<string:_id>', methods=['POST'])
 def email_template_delete(_id, collection_name=coll_email_template_database):
