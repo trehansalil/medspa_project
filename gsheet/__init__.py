@@ -1,4 +1,5 @@
 # import streamlit as st
+from datetime import datetime
 import hashlib
 import json
 import re
@@ -227,15 +228,108 @@ class DataValidator:
         pattern = re.compile(r'^[0-9a-fA-F]{24}$')
         return bool(pattern.match(object_id))
 
-    def is_valid_int(self, integer, limit):
-        """
-        Check if the given string is a valid integer between 0 and the specified limit.
+def is_valid_int(self, integer, limit):
+    """
+    Check if the given string is a valid integer between 0 and the specified limit.
 
-        Args:
+    Args:
         integer (str): The string to check.
         limit (int): The upper limit for the integer.
 
-        Returns:
+    Returns:
         bool: True if the string is a valid integer between 0 and the limit, False otherwise.
-        """
-        return integer.isdigit() and 0 <= int(integer) <= limit
+
+    Example:
+        >>> self.is_valid_int('10', 100)
+        True
+        >>> self.is_valid_int('101', 100)
+        False
+    """
+    return integer.isdigit() and 0 <= int(integer) <= limit
+
+
+def raise_key_error(self, key):
+    """
+    Raise a key error with a default error message and a specified key.
+
+    Args:
+        key (str): The key that caused the error.
+
+    Returns:
+        tuple: A tuple containing the error message and the error code.
+
+    Example:
+        >>> self.raise_key_error('example_key')
+        ({'status': 'error', 'responseMessage': 'Please fill mandatory fields', 'fields': 'example_key'}, 404)
+    """
+    default_message, error_key = {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}, 404
+    return default_message, error_key
+
+
+def raise_success_message(self):
+    """
+    Raise a success message with a default success message.
+
+    Returns:
+        tuple: A tuple containing the success message and the success code.
+
+    Example:
+        >>> self.raise_success_message()
+        ({'status': 'success', 'responseMessage': 'Message as per action perform'}, 200)
+    """
+    return {'status': 'success', "responseMessage": "Message as per action perform"}, 200
+
+
+def check_datatype_email_template(self, record, collection_name):
+    """
+    Check the data type of a record against an email template and insert it into a collection.
+
+    Args:
+        record (dict): The record to check.
+        collection_name: The collection to insert the record into.
+
+    Returns:
+        tuple: A tuple containing the result message and the result code.
+
+    Example:
+        >>> record = {'example_key': 'example_value'}
+        >>> collection_name = 'example_collection'
+        >>> self.check_datatype_email_template(record, collection_name)
+        ({'status': 'success', 'responseMessage': 'Message as per action perform'}, 200)
+    """
+    capture_expected_format = lead_database.find_one({"type": 'email_template'})
+    del capture_expected_format['type']
+    print(capture_expected_format)
+
+    for key in record:
+        if capture_expected_format[key] == 'is_valid_varchar':
+            a_length = 4294967295 if key == 'html_code' else 255  # longtext length
+            if not self.is_valid_varchar(record[key], max_length=a_length):
+                return self.raise_key_error(key=key)
+
+            print(f"{record[key]}\n")
+        elif capture_expected_format[key] == 'is_valid_int':
+            if not self.is_valid_int(record[key], limit=200):
+                return self.raise_key_error(key=key)
+            else:
+                record[key] = int(record[key])
+        elif capture_expected_format[key] == 'is_valid_email':
+            if not self.is_valid_email(record[key]):
+                return self.raise_key_error(key=key)
+        elif capture_expected_format[key] == 'is_valid_phone':
+            if not self.is_valid_phone(record[key]):
+                return self.raise_key_error(key=key)
+            else:
+                record[key] = int(record[key])
+        elif capture_expected_format[key] in ['oid', 'oid1', 'oid2']:
+            if not isinstance(record[key], ObjectId):
+                if not self.is_valid_object_id(record[key]):
+                    return self.raise_key_error(key=key)
+                else:
+                    record[key] = ObjectId(record[key])
+
+    record['created_on'] = datetime.now()
+    record['updated_on'] = record['created_on']
+
+    collection_name.insert_one(record)
+    return self.raise_success_message()

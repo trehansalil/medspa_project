@@ -989,61 +989,9 @@ def email_template_add(collection_name=coll_email_template_database, lead_databa
             return jsonify({'status': 'error', "responseMessage": "Please add missing fields",
                             'fields': missed_keys}), 404
 
-        capture_expected_format = lead_database.find_one({"type": 'email_template'})
-        del capture_expected_format['type']
-        print(capture_expected_format)
-
-        for key in record:
-            if capture_expected_format[key] == 'is_valid_varchar':
-                a_length = 4294967295 if key == 'html_code' else 255 # longtext length
-                if not data_validator.is_valid_varchar(record[key], max_length=a_length):
-                    return jsonify(
-                        {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
-                print(f"{record[key]}\n")
-            elif capture_expected_format[key] == 'is_valid_int':
-                if not data_validator.is_valid_int(record[key], limit=200):
-                    return jsonify(
-                        {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
-                else:
-                    record[key] = int(record[key])
-            elif capture_expected_format[key] == 'is_valid_email':
-                if not data_validator.is_valid_email(record[key]):
-                    return jsonify(
-                        {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
-            elif capture_expected_format[key] == 'is_valid_phone':
-                if not data_validator.is_valid_phone(record[key]):
-                    return jsonify(
-                        {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
-                else:
-                    record[key] = int(record[key])
-            elif capture_expected_format[key] in ['oid', 'oid1', 'oid2']:
-                if not isinstance(record[key], ObjectId):
-                    if not data_validator.is_valid_object_id(record[key]):
-                        return jsonify(
-                            {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
-                    else:
-                        record[key] = ObjectId(record[key])
-
-        # count_collection_docs = collection_name.count_documents({})
-
-        # if count_collection_docs == 0:
-        #     record['status'] = 1
-        # else:
-        #     record['status'] = count_collection_docs + 1
-
-        record['created_on'] = datetime.now()
-        record['updated_on'] = record['created_on']
-        collection_name.insert_one(record)
-        return jsonify({'status': 'success', "responseMessage": "Message as per action perform"}), 200
-        # record_content = collection_name.find_one({"_id": record["_id"]})
-        #
-        # if record_content is not None:
-        #     return jsonify({'status': 'error', "responseMessage": "Status already exists"}), 404
-        # else:
-        #     record['created_on'] = datetime.now()
-        #     record['updated_on'] = record['created_on']
-        #     collection_name.insert_one(record)
-        #     return jsonify({'status': 'success', "responseMessage": "Message as per action perform"}), 200
+        message, key = data_validator.check_datatype_email_template(record=record, collection_name=collection_name)
+        
+        return jsonify(message), key
 
     except Exception as e:
         print(e)
