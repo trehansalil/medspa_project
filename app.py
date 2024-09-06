@@ -969,6 +969,7 @@ def leadboard_status_delete(_id, collection_name=coll_lead_status_database):
 # Email Template Add Endpoint
 @app.route('/api/email_template/add', methods=['POST'])
 def email_template_add(collection_name=coll_email_template_database, lead_database=coll_lead_format):
+    
     record = request.get_json()
 
     print(record)
@@ -1071,7 +1072,7 @@ def email_template_list(collection_name=coll_email_template_database):
         }), 404
 
 
-# Leadboard Status Edit Endpoint
+# Email Template Edit Endpoint
 @app.route('/api/email_template/edit/<string:_id>', methods=['GET'])
 def email_template_edit(_id, collection_name=coll_email_template_database):
     record = {}
