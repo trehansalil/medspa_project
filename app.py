@@ -995,7 +995,7 @@ def email_template_add(collection_name=coll_email_template_database, lead_databa
 
         for key in record:
             if capture_expected_format[key] == 'is_valid_varchar':
-                a_length = 6000 if key == 'html_code' else 255
+                a_length = 4294967295 if key == 'html_code' else 255 # longtext length
                 if not data_validator.is_valid_varchar(record[key], max_length=a_length):
                     return jsonify(
                         {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
