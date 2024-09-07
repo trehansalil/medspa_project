@@ -181,7 +181,7 @@ class DataValidator:
         self.name_pattern = "^[a-zA-Z]+$"
 
         # Define a regular expression pattern for a typical 10-digit phone number
-        self.phone_pattern = r'^\+[\d]{12,}$'
+        self.phone_pattern = r'^\+\d{10,12}$'
 
         # Define a regular expression pattern for varchar input (alphanumeric with spaces)
         self.varchar_pattern = r'^[a-zA-Z0-9_]+$'
