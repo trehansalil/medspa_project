@@ -346,14 +346,14 @@ class DataValidator:
                             return self.raise_key_error(key=key)
                         else:
                             record[key] = ObjectId(record[key])
-
-            record['created_on'] = datetime.now()
-            record['updated_on'] = record['created_on']
             
             if _is_insert:
+                record['created_on'] = datetime.now()
+                record['updated_on'] = record['created_on']                
                 collection_name.insert_one(record)
                 
             else:
+                record['updated_on'] = datetime.now() 
                 collection_name.update_one(
                             filter={"_id": record['_id']},
                             update={'$set': record},
