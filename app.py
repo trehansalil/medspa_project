@@ -968,7 +968,7 @@ def leadboard_status_delete(_id, collection_name=coll_lead_status_database):
 
 # Email Template Add Endpoint
 @app.route('/api/email_template/add', methods=['POST'])
-def email_template_add(collection_name=coll_email_template_database, lead_database=coll_lead_format):
+def email_template_add(collection_name=coll_email_template_database):
     
     record = request.get_json()
 
@@ -1046,6 +1046,28 @@ def email_template_edit(_id, collection_name=coll_email_template_database):
             "responseMessage": "Sorry, some error has occurred. Please try again later"
         }), 404
 
+# Email Template Update Endpoint
+@app.route('/api/email_template/update', methods=['POST'])
+def email_template_update(collection_name=coll_email_template_database):
+    record = request.get_json()
+    record['_id'] = ObjectId(record['_id'])
+
+    print(record)
+
+    try:
+        if "_id" not in record:
+            return jsonify(
+                {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': "_id"}), 404
+        
+        message, key = data_validator.check_datatype_email_template(record=record, collection_name=collection_name, _is_insert=False)
+        return jsonify(message), key
+    
+    except Exception as e:
+        print(e)
+        return jsonify({
+            'status': 'error',
+            "responseMessage": "Sorry, some error has occurred. Please try again later"
+        }), 404        
 
 # Email Template Delete Endpoint
 @app.route('/api/email_template/delete/<string:_id>', methods=['POST'])
