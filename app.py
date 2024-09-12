@@ -841,7 +841,7 @@ def leadboard_status_update(collection_name=coll_lead_status_database, lead_data
         if "_id" not in record:
             return jsonify(
                 {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': "_id"}), 404
-        capture_expected_format = lead_database.find_one({"type": 'status'})
+        capture_expected_format = coll_lead_format.find_one({"type": 'status'})
         del capture_expected_format['type']
         print(capture_expected_format)
         for key in record:
