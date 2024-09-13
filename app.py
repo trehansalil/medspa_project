@@ -471,12 +471,11 @@ def delete_equipment(collection_name=coll_clinic_equipment_database):
 
 # Lead Capture Endpoint
 @app.route('/api/lead/capture', methods=['POST'])
-def lead_capture(collection_name=coll_lead_database,
-                 status_collection_name=coll_lead_status_database):
+def lead_capture(collection_name=coll_lead_database):
     record = request.get_json()
 
     print(record)
-    record_keys = ['first_name', 'last_name', 'phone', 'email', 'message', 'source']
+    record_keys = ['first_name', 'last_name', "country_code", 'phone', 'email', 'message', 'source']
     other_keys = [i for i in record if i not in record_keys]
     missed_keys = [i for i in record_keys if i not in record.keys()]
     print(missed_keys)
@@ -491,54 +490,18 @@ def lead_capture(collection_name=coll_lead_database,
             print(missed_keys)
             return jsonify({'status': 'error', "responseMessage": "Please add missing fields",
                             'fields': missed_keys}), 404
-        elif not data_validator.is_valid_varchar(record['first_name']):
-            issue_col = 'first_name'
-            return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
-                            'fields': issue_col}), 404
-        elif not data_validator.is_valid_varchar(record['last_name']):
-            issue_col = 'last_name'
-            return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
-                            'fields': issue_col}), 404
-        elif not data_validator.is_valid_email(record['email']):
-            issue_col = 'email'
-            return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
-                            'fields': issue_col}), 404
-        elif not data_validator.is_valid_phone(record['phone']):
-            issue_col = 'phone'
-            return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
-                            'fields': issue_col}), 404
-        elif not data_validator.is_valid_varchar(record['source']):
-            issue_col = 'source'
-            return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
-                            'fields': issue_col}), 404
-
-        # record['_id'], record['_is_new'] = mongo_id_generator(record['first_name'], record['last_name'],
-        #                                                       record['email'], record['phone'],
-        #                                                       collection_name=collection_name,
-        #                                                       variable='_id')
-        record['phone'] = int(record['phone'])
-        record['status_id'] = status_collection_name.find_one({'_is_default': 1})['_id']
-        record['_is_deleted'] = 0
-
-        # record_content = collection_name.find_one(filter={"_id": record['_id']})
-        #
-        # if record_content is not None:
-        #     return jsonify({'status': 'error', "responseMessage": "User already exists"}), 404
-        # else:
-        #     record['created_on'] = datetime.now()
-        #     record['updated_on'] = record['created_on']
-        #     collection_name.insert_one(record)
-        #     return jsonify({'status': 'success', "responseMessage": "Message as per action perform"}), 200
-        record['created_on'] = datetime.now()
-        record['updated_on'] = record['created_on']
-        print(record)
-        collection_name.insert_one(record)
-        return jsonify({'status': 'success', "responseMessage": "Message as per action perform"}), 200
+        
+        message, key = data_validator.check_datatype_lead_template(record=record, collection_name=collection_name, _is_insert=True)
+        
+        return jsonify(message), key
 
     except Exception as e:
         print(e)
-        return jsonify(
-            {'status': 'error', "responseMessage": "Sorry some error has occurred please try again later"}), 404
+        message, key = data_validator.raise_error_message(
+            e=f"Sorry some error has occurred please try again later. Error: {e}"
+        )
+        
+        return jsonify(message), key
 
 
 # Lead List Endpoint
@@ -604,46 +567,24 @@ def lead_update(collection_name=coll_lead_database, status_collection_name=coll_
         if 'status_id' in record:
             record['status_id'] = status_collection_name.find_one({'name': record['status_id']})['_id']
         if "_id" not in record:
-            return jsonify(
-                {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': "_id"}), 404
-        capture_expected_format = coll_lead_format.find_one({"type": 'lead'})
-        for key in record:
-            if capture_expected_format[key] == 'is_valid_varchar':
-                if not data_validator.is_valid_varchar(record[key]):
-                    return jsonify(
-                        {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
-            elif capture_expected_format[key] == 'is_valid_email':
-                if not data_validator.is_valid_email(record[key]):
-                    return jsonify(
-                        {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
-            elif capture_expected_format[key] == 'is_valid_phone':
-                if not data_validator.is_valid_phone(record[key]):
-                    return jsonify(
-                        {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
-                else:
-                    record[key] = int(record[key])
-            elif capture_expected_format[key] == 'oid':
-                if not isinstance(record[key], ObjectId):
-                    if not data_validator.is_valid_object_id(record[key]):
-                        return jsonify(
-                            {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
-                    else:
-                        record[key] = ObjectId(record[key])
+            message, key = data_validator.raise_key_error(key='_id')
+            return jsonify(message), key
+        
+        message, key = data_validator.check_datatype_lead_template(
+            record=record, 
+            collection_name=collection_name, 
+            _is_insert=False
+        )
 
-        record_content = collection_name.find_one(filter={"_id": record['_id']})
-
-        if record_content is not None:
-            record['updated_on'] = datetime.now()
-            collection_name.update_one(filter={"_id": record['_id']}, update={'$set': record})
-            return jsonify({'status': 'success', "responseMessage": "Message as per action perform"}), 200
-
-        else:
-            return jsonify({'status': 'error', "responseMessage": "User doesn't exists"}), 404
-
+        return jsonify(message), key
+    
     except Exception as e:
-        print(e)
-        return jsonify(
-            {'status': 'error', "responseMessage": "Sorry some error has occurred please try again later"}), 404
+        
+        message, key = data_validator.raise_error_message(
+            e=f"Sorry some error has occurred please try again later. Error: {e}"
+        )
+        
+        return jsonify(message), key
 
 
 @app.route('/api/lead/archive/<string:_id>', methods=['POST'])
@@ -852,7 +793,7 @@ def leadboard_status_update(collection_name=coll_lead_status_database, lead_data
                         {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
                 print(f"{record[key]}\n")
             elif capture_expected_format[key] == 'is_valid_int':
-                if not data_validator.is_valid_int(record[key], limit=99):
+                if not data_validator.is_valid_int(record[key], max_limit=99):
                     return jsonify(
                         {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
                 else:

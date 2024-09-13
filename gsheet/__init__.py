@@ -228,13 +228,14 @@ class DataValidator:
         pattern = re.compile(r'^[0-9a-fA-F]{24}$')
         return bool(pattern.match(object_id))
 
-    def is_valid_int(self, integer, limit):
+    def is_valid_int(self, integer, max_limit, min_limit:int= 0):
         """
         Check if the given string is a valid integer between 0 and the specified limit.
 
         Args:
             integer (str): The string to check.
-            limit (int): The upper limit for the integer.
+            min_limit (int): The lower limit for the integer.
+            max_limit (int): The upper limit for the integer.
 
         Returns:
             bool: True if the string is a valid integer between 0 and the limit, False otherwise.
@@ -246,10 +247,10 @@ class DataValidator:
             False
         """
         if type(integer) == str:
-            return integer.isdigit() and 0 <= int(integer) <= limit
+            print(integer)
+            return integer.isdigit() and min_limit <= int(integer) <= max_limit
         elif type(integer) in [int, float]:
-            return 0 <= int(integer) <= limit
-
+            return min_limit <= int(integer) <= max_limit
 
     def raise_key_error(self, key):
         """
@@ -267,7 +268,6 @@ class DataValidator:
         """
         default_message, error_key = {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}, 404
         return default_message, error_key
-
 
     def raise_success_message(self):
         """
@@ -294,8 +294,125 @@ class DataValidator:
             ({'status': 'success', 'responseMessage': 'Message as per action perform'}, 200)
         """
         return {'status': 'error', "responseMessage": e}, 404    
+    
+    def check_datatype_lead_template(self, record, collection_name, _is_insert:bool=True):
+        """
+        Checks the data type of each field in the record against the expected format
+        and inserts or updates the record in the collection accordingly.
 
+        Args:
+            record (dict): The record to be inserted or updated
+            collection_name (str): The name of the collection
+            _is_insert (bool, optional): Whether to insert a new record (True) or update an existing one (False). Defaults to True.
 
+        Returns:
+            message (dict): A success or error message in dict eg. {'status': 'success', 'responseMessage': 'Message as per action perform'}
+            key (int): Message key like 200, 404, etc
+
+        Raises:
+            Exception: If any error occurs during the process
+
+        Example:
+            >>> record = {
+            ...     'first_name': 'John',
+            ...     'last_name': 'Doe',
+            ...     'email': 'johndoe@example.com',
+            ...     'phone': '1234567890'
+            ... }
+            >>> collection_name = 'leads'
+            >>> check_datatype_lead_template(record, collection_name)
+            {'status': 'success', 'responseMessage': 'Message as per action perform'}, 200
+        """
+        try:
+            capture_expected_format = coll_lead_format.find_one({"type": 'lead'})
+            del capture_expected_format['type']
+            
+            print(capture_expected_format)  
+                  
+            for key in record:      
+                if capture_expected_format[key] == 'is_valid_varchar': 
+                         
+                    if key in ['message']:
+                        a_length=4294967295 # supporting longtext for names  
+                    elif key=="country_code":
+                        a_length=4 #
+                    else:
+                        a_length=255
+                    
+                    if not self.is_valid_varchar(record[key], max_length=a_length):
+                        return self.raise_key_error(key=key)
+                    
+                elif capture_expected_format[key] == 'is_valid_email':
+                    if not self.is_valid_email(record[key]):
+                        return self.raise_key_error(key=key)
+                
+                elif capture_expected_format[key] == 'is_valid_int':
+                    if not self.is_valid_int(record[key], min_limit=1000000000, max_limit=999999999999999):
+                        
+                        return self.raise_key_error(key=key)
+                    else:
+                        record[key] = int(record[key])
+
+                elif capture_expected_format[key] in coll_lead_format.distinct("_id"):
+                    if not isinstance(record[key], ObjectId):
+                        if not self.is_valid_object_id(record[key]):
+                            return self.raise_key_error(key=key)
+                        else:
+                            record[key] = ObjectId(record[key])
+                                            
+                # this code becomes redundant since phone number is processed in 2 parts country_code (varchar) + phone number (int)                                              
+                elif capture_expected_format[key] == 'is_valid_phone':
+                    if not self.is_valid_phone(record[key]):
+                        return self.raise_key_error(key=key)
+            
+            if _is_insert: 
+                  
+                # record['_id'], record['_is_new'] = mongo_id_generator(record['first_name'], record['last_name'],
+                #                                                       record['email'], record['phone'],
+                #                                                       collection_name=collection_name,
+                #                                                       variable='_id')
+                
+                record['status_id'] = coll_lead_status_database.find_one({'_is_default': 1})['_id']
+                record['_is_deleted'] = 0
+
+                # record_content = collection_name.find_one(filter={"_id": record['_id']})
+                #
+                # if record_content is not None:
+                #     return jsonify({'status': 'error', "responseMessage": "User already exists"}), 404
+                # else:
+                #     record['created_on'] = datetime.now()
+                #     record['updated_on'] = record['created_on']
+                #     collection_name.insert_one(record)
+                #     return jsonify({'status': 'success', "responseMessage": "Message as per action perform"}), 200   
+                                         
+                record['created_on'] = datetime.now()
+                record['updated_on'] = record['created_on'] 
+                print(record)               
+                collection_name.insert_one(record)
+                
+                return self.raise_success_message()
+                
+            else:
+                record['updated_on'] = datetime.now() 
+                
+                record_content = collection_name.find_one(filter={"_id": record['_id']})
+
+                if record_content is not None:
+                    record['updated_on'] = datetime.now()
+                    collection_name.update_one(
+                                filter={"_id": record['_id']},
+                                update={'$set': record},
+                                upsert=True
+                    )
+                    return self.raise_success_message()
+
+                else:
+                    return self.raise_error_message(e="User doesn't exists")
+        
+        except Exception as e:
+            print(e)
+            return self.raise_error_message(e=e)
+     
     def check_datatype_email_template(self, record, collection_name, _is_insert:bool=True):
         """
         Check the data type of a record against an email template and insert it into a collection.
@@ -320,26 +437,23 @@ class DataValidator:
             print(capture_expected_format)
 
             for key in record:
+                
                 if capture_expected_format[key] == 'is_valid_varchar':
                     a_length = 4294967295 if key == 'html_code' else 255  # longtext length
                     if not self.is_valid_varchar(record[key], max_length=a_length):
                         return self.raise_key_error(key=key)
 
-                    print(f"{record[key]}\n")
                 elif capture_expected_format[key] == 'is_valid_int':
                     print(key)
-                    if not self.is_valid_int(record[key], limit=1):
+                    if not self.is_valid_int(record[key], max_limit=1):
                         return self.raise_key_error(key=key)
                     else:
                         record[key] = int(record[key])
+                        
                 elif capture_expected_format[key] == 'is_valid_email':
                     if not self.is_valid_email(record[key]):
                         return self.raise_key_error(key=key)
-                elif capture_expected_format[key] == 'is_valid_phone':
-                    if not self.is_valid_phone(record[key]):
-                        return self.raise_key_error(key=key)
-                    else:
-                        record[key] = int(record[key])
+                    
                 elif capture_expected_format[key] in coll_lead_format.distinct("_id"):
                     if not isinstance(record[key], ObjectId):
                         if not self.is_valid_object_id(record[key]):
