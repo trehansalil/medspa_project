@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "medspa"
+version = "0.1.0"
+description = "\"\""
+authors = ["Salil Trehan <trehansalil1@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.10.12"
+Flask = "3.0.2"
+jinja2 = "^3.1.4"
+pymongo = "4.6.2"
+gunicorn = "^23.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
