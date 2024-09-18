@@ -683,43 +683,18 @@ def leadboard_status_add(collection_name=coll_lead_status_database):
             print(missed_keys)
             return jsonify({'status': 'error', "responseMessage": "Please add missing fields",
                             'fields': missed_keys}), 404
-        elif not data_validator.is_valid_varchar(record['name']):
-            issue_col = 'name'
-            return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
-                            'fields': issue_col}), 404
-        elif not data_validator.is_valid_varchar(record['label_color'], max_length=6):
-            issue_col = 'label_color'
-            return jsonify({'status': 'error', "responseMessage": "Please fill mandatory fields",
-                            'fields': issue_col}), 404
 
-        record['_id'], record['_is_new'] = mongo_id_generator(record['name'],
-                                                              collection_name=collection_name,
-                                                              variable='_id')
+        message, key = data_validator.check_datatype_lead_status_template(record=record, collection_name=collection_name, _is_insert=True)
 
-        count_collection_docs = collection_name.count_documents({})
-
-        if count_collection_docs == 0:
-            record['_is_default'] = 1
-            record['priority'] = 1
-        else:
-            record['_is_default'] = 0
-            record['priority'] = count_collection_docs + 1
-        record['_is_deleted'] = 0
-
-        record_content = collection_name.find_one({"_id": record["_id"]})
-
-        if record_content is not None:
-            return jsonify({'status': 'error', "responseMessage": "Status already exists"}), 404
-        else:
-            record['created_on'] = datetime.now()
-            record['updated_on'] = record['created_on']
-            collection_name.insert_one(record)
-            return jsonify({'status': 'success', "responseMessage": "Message as per action perform"}), 200
-
+        
+    
     except Exception as e:
         print(e)
-        return jsonify(
-            {'status': 'error', "responseMessage": "Sorry some error has occurred please try again later"}), 404
+        message, key = data_validator.raise_error_message(e=e)
+        # return jsonify(
+        #     {'status': 'error', "responseMessage": "Sorry some error has occurred please try again later"}), 404
+        
+    return jsonify(message), key
 
 
 # Leadboard Status List Endpoint
@@ -780,102 +755,13 @@ def leadboard_status_update(collection_name=coll_lead_status_database, lead_data
 
     try:
         if "_id" not in record:
-            return jsonify(
-                {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': "_id"}), 404
-        capture_expected_format = coll_lead_format.find_one({"type": 'status'})
-        del capture_expected_format['type']
-        print(capture_expected_format)
-        for key in record:
-            if capture_expected_format[key] == 'is_valid_varchar':
-                a_length = 6 if key == 'label_color' else 255
-                if not data_validator.is_valid_varchar(record[key], max_length=a_length):
-                    return jsonify(
-                        {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
-                print(f"{record[key]}\n")
-            elif capture_expected_format[key] == 'is_valid_int':
-                if not data_validator.is_valid_int(record[key], max_limit=99):
-                    return jsonify(
-                        {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
-                else:
-                    record[key] = int(record[key])
-            elif capture_expected_format[key] == 'is_valid_email':
-                if not data_validator.is_valid_email(record[key]):
-                    return jsonify(
-                        {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
-            elif capture_expected_format[key] == 'is_valid_phone':
-                if not data_validator.is_valid_phone(record[key]):
-                    return jsonify(
-                        {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
-                else:
-                    record[key] = int(record[key])
-            elif capture_expected_format[key] in ['oid', 'oid1']:
-                if not isinstance(record[key], ObjectId):
-                    if not data_validator.is_valid_object_id(record[key]):
-                        return jsonify(
-                            {'status': 'error', "responseMessage": "Please fill mandatory fields", 'fields': key}), 404
-                    else:
-                        record[key] = ObjectId(record[key])
+            message, key = data_validator.raise_key_error(key="_id")
+            return jsonify(message), key
 
-        record_content = collection_name.find_one(filter={"_id": record['_id']})
+        message, key = data_validator.check_datatype_lead_status_template(record=record, collection_name=collection_name, _is_insert=False)
 
-        if record_content is not None:
-            if 'name' in record:
-                if record['name'] != record_content['name']:
-                    record['_id'], record['_is_new'] = mongo_id_generator(record['name'],
-                                                                          collection_name=collection_name,
-                                                                          variable='_id')
-                    coll_lead_status_database.delete_one(
-                        filter={"_id": record_content['_id']}
-                    )
-                    coll_lead_status_database.update_one(
-                        filter={"_id": record['_id']},
-                        update={'$set': record},
-                        upsert=True
-                    )
-            if 'priority' in record:
-                if record_content['priority'] == 1:
-                    del record_content['priority']
-                elif (record['priority'] == 1) & (record_content['priority'] != 1):
-                    record['priority'] = record_content['priority']
-                else:
-                    if record['priority'] > record_content['priority']:
-                        collection_name.update_many(
-                            {"priority": {"$gt": record_content['priority'], "$lte": record['priority']}},
-                            {"$inc": {"priority": -1}}
-                        )
-                    elif record['priority'] < record_content['priority']:
-                        collection_name.update_many(
-                            {"priority": {"$gte": record['priority'], "$lt": record_content['priority']}},
-                            {"$inc": {"priority": 1}}
-                        )
-
-            record['updated_on'] = datetime.now()
-            if record['name'] != record_content['name']:
-                for i in record_content:
-                    if i not in record:
-                        record[i] = record_content[i]
-                coll_lead_status_database.update_one(
-                    filter={"_id": record['_id']},
-                    update={'$set': record},
-                    upsert=True
-                )
-                lead_database.update_many(
-                    {"status_id": record_content['_id']},
-                    {"$set": {"status_id": record['_id']}}
-                )
-                coll_lead_status_database.delete_one(
-                    filter={"_id": record_content['_id']}
-                )
-            else:
-                collection_name.update_one(
-                    filter={"_id": record_content['_id']},
-                    update={'$set': record}
-                )
-            return jsonify({'status': 'success', "responseMessage": "Message as per action perform"}), 200
-
-        else:
-            return jsonify({'status': 'error', "responseMessage": "Status doesn't exists"}), 404
-
+        return jsonify(message), key
+    
     except Exception as e:
         raise CustomException(e, sys) from e
         # print(e)
@@ -893,18 +779,35 @@ def leadboard_status_delete(_id, collection_name=coll_lead_status_database):
         record_content = collection_name.find_one(filter={"_id": record['_id']})
 
         if record_content is not None:
-            collection_name.delete_one(filter={"_id": record['_id']})
-            return jsonify({'status': 'success', "responseMessage": "Message as per action perform"}), 200
+            if record_content['priority'] == 1:
+                message, key = data_validator.raise_error_message(e="Status with Priority 1 cannot be deleted")
+            else:
+          
+                collection_name.delete_one(filter={"_id": record['_id']}) # delete this first 
+                
+                # fetching predessor id
+                new_status_id = collection_name.find_one({"priority": record_content["priority"] - 1})['_id']
+                
+                # replacing all leads with this predesessor id
+                coll_lead_database.update_many(
+                   {'status_id': record['_id']},
+                   {'$set': {'status_id': new_status_id}}
+                )
+                
+                # now update all priority above record_content['priority'] by decrease of -1
+                collection_name.update_many(
+                    {"priority": {"$gte": record_content['priority']}},
+                    {"$inc": {"priority": -1}}
+                )  
+                message, key = data_validator.raise_success_message()    
         else:
             record['updated_on'] = record['created_on']
-            return jsonify({'status': 'error', "responseMessage": "Status doesn't exist"}), 404
+            message, key = data_validator.raise_error_message(e="Status doesn't exists")
 
     except Exception as e:
-        print(e)
-        return jsonify({
-            'status': 'error',
-            "responseMessage": "Sorry, some error has occurred. Please try again later"
-        }), 404
+        message, key = data_validator.raise_error_message(e=e)
+    
+    return jsonify(message), key
 
 
 # Email Template Add Endpoint

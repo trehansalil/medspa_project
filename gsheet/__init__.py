@@ -10,6 +10,7 @@ from bson import ObjectId
 from dateutil.parser import parse
 
 from medspa.constants import *
+from medspa.exception import CustomException
 
 # config_path = os.path.join(os.getcwd(), "config_file.config")
 #
@@ -284,17 +285,142 @@ class DataValidator:
     
     def raise_error_message(self, e):
         """
-        Raise a success message with a default success message.
+        Raise a error message with a default success message.
 
         Returns:
             tuple: A tuple containing the success message and the success code.
 
         Example:
-            >>> self.raise_success_message()
-            ({'status': 'success', 'responseMessage': 'Message as per action perform'}, 200)
+            >>> self.raise_error_message()
+            ({'status': 'error', "responseMessage": e}, 404)
         """
         return {'status': 'error', "responseMessage": e}, 404    
-    
+
+    def check_datatype_lead_status_template(self, record, collection_name, _is_insert:bool=True):
+        capture_expected_format = coll_lead_format.find_one({"type": 'status'})
+        del capture_expected_format['type']
+        print(capture_expected_format)
+        try:
+            for key in record:
+                if capture_expected_format[key] == 'is_valid_varchar':
+                    a_length = 6 if key == 'label_color' else 255
+                    if not self.is_valid_varchar(record[key], max_length=a_length):
+                        return self.raise_key_error(key=key)
+                    
+                elif capture_expected_format[key] == 'is_valid_int':
+                    if not self.is_valid_int(record[key], min_limit=1, max_limit=99):
+                        return self.raise_key_error(key=key)
+                    else:
+                        record[key] = int(record[key])
+                        
+                elif capture_expected_format[key] == 'is_valid_phone':
+                    if not self.is_valid_phone(record[key]):
+                        return self.raise_key_error(key=key)
+                    else:
+                        record[key] = int(record[key])
+                elif capture_expected_format[key] in coll_lead_format.distinct("_id"):
+                    if not isinstance(record[key], ObjectId):
+                        if not self.is_valid_object_id(record[key]):
+                            return self.raise_key_error(key=key)
+                        else:
+                            record[key] = ObjectId(record[key])  
+            
+            if _is_insert: 
+                    
+                record['_id'], record['_is_new'] = mongo_id_generator(record['name'],
+                                                                    collection_name=collection_name,
+                                                                    variable='_id')
+
+                count_collection_docs = collection_name.count_documents({})
+
+                if count_collection_docs == 0:
+                    record['_is_default'] = 1
+                    record['priority'] = 1
+                else:
+                    record['_is_default'] = 0
+                    record['priority'] = count_collection_docs + 1
+                record['_is_deleted'] = 0
+
+                record_content = collection_name.find_one({"_id": record["_id"]})
+
+                if record_content is not None:
+                    return self.raise_error_message(e="Status already exists")
+                else:
+                    record['created_on'] = datetime.now()
+                    record['updated_on'] = record['created_on']
+                    collection_name.insert_one(record)
+                
+                    return self.raise_success_message()
+                
+            else:
+                
+                record_content = collection_name.find_one(filter={"_id": record['_id']})
+
+                if record_content is not None:
+                    if 'name' in record:
+                        if record['name'] != record_content['name']:
+                            
+                            record['_id'], record['_is_new'] = mongo_id_generator(record['name'],
+                                                                                collection_name=collection_name,
+                                                                                variable='_id')
+                            coll_lead_status_database.delete_one(
+                                filter={"_id": record_content['_id']}
+                            )
+                            coll_lead_status_database.update_one(
+                                filter={"_id": record['_id']},
+                                update={'$set': record},
+                                upsert=True
+                            )
+                            
+                    if 'priority' in record:
+                        if record_content['priority'] == 1:
+                            del record['priority'] # Cannot update the priority for p-1 record
+                        elif (record['priority'] == 1) & (record_content['priority'] != 1):
+                            # record['priority'] = record_content['priority']
+                            del record['priority'] # Cannot update any other status priority to p-1 record
+                        else:
+                            if record['priority'] > record_content['priority']:
+                                collection_name.update_many(
+                                    {"priority": {"$gt": record_content['priority'], "$lte": record['priority']}},
+                                    {"$inc": {"priority": -1}}
+                                )
+                            elif record['priority'] < record_content['priority']:
+                                collection_name.update_many(
+                                    {"priority": {"$gte": record['priority'], "$lt": record_content['priority']}},
+                                    {"$inc": {"priority": 1}}
+                                )
+
+                    record['updated_on'] = datetime.now()
+                    if record['name'] != record_content['name']:
+                        for i in record_content:
+                            if i not in record:
+                                record[i] = record_content[i]
+                        coll_lead_status_database.update_one(
+                            filter={"_id": record['_id']},
+                            update={'$set': record},
+                            upsert=True
+                        )
+                        coll_lead_database.update_many(
+                            {"status_id": record_content['_id']},
+                            {"$set": {"status_id": record['_id']}}
+                        )
+                        coll_lead_status_database.delete_one(
+                            filter={"_id": record_content['_id']}
+                        )
+                    else:
+                        collection_name.update_one(
+                            filter={"_id": record_content['_id']},
+                            update={'$set': record}
+                        )
+                    return self.raise_success_message()
+
+                else:
+                    return self.raise_error_message(e="Status doesn't exists")
+        
+        except Exception as e:
+
+            return self.raise_error_message(e=CustomException(e, sys))  
+              
     def check_datatype_lead_template(self, record, collection_name, _is_insert:bool=True):
         """
         Checks the data type of each field in the record against the expected format
