@@ -4,7 +4,6 @@ from datetime import datetime
 from flask import Flask, request, jsonify, render_template
 
 from gsheet import *
-from medspa.exception import CustomException
 
 app = Flask(__name__, static_folder=os.path.join(os.getcwd(), 'static'))
 
@@ -476,20 +475,31 @@ def lead_capture(collection_name=coll_lead_database):
 
     print(record)
     record_keys = ['first_name', 'last_name', "country_code", 'phone', 'email', 'message', 'source']
+    optional_record_keys = ['assignee_id']
+    
     other_keys = [i for i in record if i not in record_keys]
     missed_keys = [i for i in record_keys if i not in record.keys()]
+    
+    optional_keys = [i for i in optional_record_keys if i not in record.keys()]
+    
     print(missed_keys)
+    print(optional_keys)
+    
     try:
         if len(other_keys) != 0:
             other_keys = ", ".join(other_keys)
             print(other_keys)
             return jsonify({'status': 'error', "responseMessage": "Please remove unnecessary fields",
                             'fields': other_keys}), 404
+            
         elif len(missed_keys) != 0:
             missed_keys = ", ".join(missed_keys)
             print(missed_keys)
             return jsonify({'status': 'error', "responseMessage": "Please add missing fields",
                             'fields': missed_keys}), 404
+        
+        if len(optional_keys) != 0:
+            record[optional_record_keys[0]] = '0'
         
         message, key = data_validator.check_datatype_lead_template(record=record, collection_name=collection_name, _is_insert=True)
         
