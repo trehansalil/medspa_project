@@ -3,11 +3,11 @@ from datetime import datetime
 
 from flask import Flask, request, jsonify, render_template
 
-from gsheet import *
-
-app = Flask(__name__, static_folder=os.path.join(os.getcwd(), 'static'))
+from medspa.components.gsheet import *
 
 data_validator = DataValidator()
+
+app = Flask(__name__, static_folder=os.path.join(os.getcwd(), 'static'))
 
 
 # Requires the PyMongo package.
